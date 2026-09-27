@@ -9,7 +9,8 @@ class Layer:
         neurons=None,
         number_of_inputs=None,
         number_of_neurons=None,
-        seed=0
+        seed=0,
+        activation="relu"
     ):
         if neurons is not None:
             self.neurons = neurons
@@ -36,7 +37,8 @@ class Layer:
             self.neurons.append(
                 Neuron(
                     weights=weights,
-                    bias=bias
+                    bias=bias,
+                    activation=activation
                 )
             )
 

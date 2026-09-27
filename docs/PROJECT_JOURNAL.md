@@ -1446,3 +1446,115 @@ and then reverses that path during backpropagation.
 ### Status
 
 Experiment 017 complete.
+
+## Entry 019 — Automatic Network Construction
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Extended the reusable Network class so it can automatically construct its layers from a simple architecture description.
+
+Instead of manually creating each Layer, the network can now be defined with:
+
+number_of_inputs = 2
+layer_sizes = [2, 1]
+activations = ["relu", "linear"]
+
+The Network creates the required layers and connects their input/output sizes automatically.
+
+### Architecture
+
+2 inputs
+→ 2 ReLU hidden neurons
+→ 1 linear output neuron
+
+### Training Data
+
+[0, 0] → 0
+[0, 1] → 1
+[1, 0] → 1
+[1, 1] → 0
+
+### First Run — Seed 0
+
+The automatically constructed network did not successfully learn XOR.
+
+Final loss:
+
+0.350569675723
+
+Final predictions:
+
+[0, 0] → 0.683610867659947
+[0, 1] → 0.683610867659947
+[1, 0] → 0.683610867659947
+[1, 1] → approximately 0
+
+### Second Run — Seed 1
+
+Changing the random seed produced a successful training run.
+
+Epoch 1 loss:
+
+0.203837789774
+
+Epoch 10 loss:
+
+0.079870619168
+
+Epoch 100 loss:
+
+0.000363064324
+
+Epoch 500 loss:
+
+0.000000000000
+
+Epoch 1000 loss:
+
+0.000000000000
+
+Final predictions:
+
+[0, 0] → approximately 0
+[0, 1] → approximately 1
+[1, 0] → approximately 1
+[1, 1] → approximately 0
+
+### Observation
+
+The automatic Network construction worked in both runs.
+
+The difference was the initial random parameters.
+
+With seed 0, the network became stuck in a state where multiple inputs produced the same output and training stopped improving.
+
+With seed 1, the same architecture and training process successfully learned XOR.
+
+### Lesson
+
+Network architecture and parameter initialization are separate concerns.
+
+A correct architecture does not guarantee successful training from every random initialization.
+
+Random initialization affects where optimization begins and can determine whether a small network successfully learns a particular problem.
+
+### Important Understanding
+
+The Network now separates three responsibilities:
+
+1. Architecture — which layers and sizes exist.
+2. Computation — forward and backward propagation.
+3. Learning — updating parameters using gradients.
+
+The architecture can now be described without manually constructing every layer.
+
+### Status
+
+Experiment 018 complete.
+
+### Follow-up
+
+Future experiments should investigate initialization more systematically rather than depending on a single seed.
+
