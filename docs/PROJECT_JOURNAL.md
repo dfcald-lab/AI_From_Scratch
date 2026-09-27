@@ -2565,3 +2565,64 @@ The result does not establish that full-batch training is generally superior. It
 
 Next question: determine whether the difference comes from gradient averaging itself or from the different parameter trajectory produced by the two update rules.
 
+
+---
+
+## Experiment 032 — Batch Gradient Scaling
+
+Date: 2026-09-27
+
+### Question
+Does batch gradient scaling affect the seed-dependent training outcome?
+
+### Setup
+Used the same He-initialized 2-2-1 XOR network.
+
+Compared three full-batch update rules:
+
+1. Average:
+   sum the four example gradients and divide by 4.
+
+2. Sum:
+   sum the four example gradients without dividing by 4.
+
+3. Sum-scaled:
+   sum the four example gradients without dividing by 4, but divide the learning rate by 4.
+
+All conditions used 4000 batch parameter updates across seeds 0–9.
+
+The average and sum-scaled conditions therefore apply mathematically equivalent parameter updates.
+
+### Findings
+
+Average:
+- successful runs: 4/10
+- mean final loss: 0.182302779168
+- mean final separation gap: 0.242709185
+
+Sum-scaled:
+- successful runs: 4/10
+- mean final loss: 0.182302779168
+- mean final separation gap: 0.242709185
+
+The identical results confirm that the two implementations are equivalent.
+
+Sum:
+- successful runs: 5/10
+- mean final loss: 0.166666666667
+- mean final separation gap: 0.272730891
+
+The unscaled sum condition caused seed 9 to reach essentially zero loss, while seed 9 remained at a higher-loss state under average and sum-scaled updates.
+
+### Conclusion
+
+The magnitude of the batch parameter update materially changes the training trajectory.
+
+The average and sum-scaled controls produced identical results, confirming that the observed difference is caused by the effective update size rather than the implementation of gradient accumulation itself.
+
+In this experiment, the larger unscaled batch step produced more successful runs than the averaged batch step.
+
+Therefore, learning-rate scale is now a strong candidate explanation for some of the seed-dependent behavior observed earlier.
+
+Next question: determine whether there is a reproducible relationship between learning rate and the probability of reaching a separable hidden representation.
+
