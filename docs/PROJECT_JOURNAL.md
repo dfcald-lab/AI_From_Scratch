@@ -3173,3 +3173,77 @@ The distinction is important: width 6 may make it easier for gradient descent to
 The post-training pruning result does not establish that a width-3 or width-4 network trained from scratch would reliably reproduce those solutions. Experiment 038 already showed that narrower networks have lower success rates.
 
 The next experiment should test whether the extra capacity helps specifically by allowing multiple candidate hidden features to develop before some become unnecessary.
+
+## Experiment 040 — Late Capacity Injection
+
+### Question
+
+Does additional hidden capacity need to be present from initialization, or can it rescue a width-2 trajectory after training has already begun?
+
+### Setup
+
+Started each run with the same 2-neuron hidden ReLU network used in Experiments 033–039.
+
+- He initialization
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter-update steps
+- seeds 0–9
+
+The width-2 control trained for all 4000 updates without modification.
+
+For the intervention conditions, four additional hidden ReLU neurons were added at one of five points:
+
+- epoch 0
+- epoch 5
+- epoch 20
+- epoch 50
+- epoch 100
+
+The original two hidden neurons were not modified.
+
+The four new hidden neurons received fresh He-initialized weights and zero bias.
+
+Their output-layer weights were initialized to zero so that adding the neurons did not immediately alter the network's prediction at the injection point. They then participated in normal training after injection.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+The width-2 control reproduced the previous result:
+
+- successful seeds: 1, 2, 4, 8, 9
+- success rate: 5/10
+- mean final loss: 0.166666666667
+
+Every capacity-injection condition succeeded on all ten seeds:
+
+| Capacity injection | Successful runs | Mean final loss |
+|---|---:|---:|
+| none, width-2 control | 5/10 | 0.166666666667 |
+| epoch 0 | 10/10 | 0.000000000000 |
+| epoch 5 | 10/10 | 0.000000000000 |
+| epoch 20 | 10/10 | 0.000000000000 |
+| epoch 50 | 10/10 | 0.000000000000 |
+| epoch 100 | 10/10 | 0.000000000000 |
+
+Most importantly, the five seeds that consistently failed with width 2 in earlier experiments were all rescued by the late-capacity intervention.
+
+This includes seeds whose width-2 trajectories had already developed poor or nearly inactive hidden representations before the additional neurons were introduced.
+
+### Conclusion
+
+Additional hidden capacity does not need to be present from the beginning for the current XOR task.
+
+Even after 100 full-batch updates of the width-2 network, adding four new hidden neurons caused every tested seed to reach zero loss.
+
+This shows that the poor width-2 trajectories are reversible rather than permanently trapped states. The failure is therefore not simply the consequence of an irreversible optimization collapse.
+
+The result also strengthens the capacity hypothesis from Experiment 038. Extra neurons appear to provide the optimization process with additional directions in parameter space that can recover from trajectories that fail with only two hidden neurons.
+
+The experiment does not yet establish how many additional neurons are necessary, nor whether the rescue is caused by the added representational capacity itself or by having multiple newly initialized hidden features available.
+
+The next experiment should determine the minimum amount of additional capacity required to rescue the failed width-2 trajectories.
