@@ -2500,3 +2500,68 @@ The next question is whether the instability comes from applying parameter updat
 
 Experiment 031 should compare online per-example updates against full-batch updates using the same initialization, learning rate, architecture, and training data.
 
+
+---
+
+## Experiment 031 — Online vs Full-Batch Updates
+
+Date: 2026-09-27
+
+### Question
+Does applying gradients after every individual example versus once per full batch affect the seed-dependent XOR training outcome?
+
+### Setup
+Used the same He-initialized 2-2-1 XOR network.
+
+Compared:
+
+1. Online updates:
+   - process one example
+   - backpropagate
+   - update parameters
+   - repeat for all four examples
+
+2. Full-batch updates:
+   - compute gradients for all four examples at the same parameter state
+   - average the gradients
+   - perform one parameter update
+
+The original batch implementation was first found to be invalid because `Neuron.backward()` overwrites stored gradients rather than accumulating them. The batch implementation was corrected to explicitly accumulate and average gradients before updating parameters.
+
+Parameter-update counts were then equalized:
+
+- online: 1000 epochs × 4 updates = 4000 parameter updates
+- batch: 4000 epochs × 1 update = 4000 parameter updates
+
+Ten He-initialized seeds were tested for each method.
+
+### Findings
+
+Online training:
+
+- successful runs: 3/10
+- mean final loss: 0.216863172405
+- mean final separation gap: 0.157110377
+
+Full-batch training:
+
+- successful runs: 4/10
+- mean final loss: 0.182302779168
+- mean final separation gap: 0.242709185
+
+Seeds 2, 4, and 8 succeeded under both methods.
+
+Seed 1 failed under online training but succeeded under full-batch training.
+
+Several failed seeds converged near the familiar loss plateau around 0.333333, while full-batch training produced a stronger hidden-space separation for several successful runs.
+
+### Conclusion
+
+Update granularity affects the optimization trajectory in this network.
+
+With equalized parameter-update counts, full-batch training produced more successful runs and a larger mean final hidden-space separation gap than online training in this 10-seed experiment.
+
+The result does not establish that full-batch training is generally superior. It establishes that the way Larry aggregates gradients is a meaningful experimental variable that can change whether a useful hidden representation emerges.
+
+Next question: determine whether the difference comes from gradient averaging itself or from the different parameter trajectory produced by the two update rules.
+
