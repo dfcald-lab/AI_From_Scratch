@@ -808,3 +808,61 @@ The backward pass propagated gradients from the loss through the output neuron, 
 ### Status
 
 Experiment 010 complete.
+
+## Entry 012 — Reusable Neuron
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Created a reusable Neuron class containing:
+
+- weights
+- bias
+- ReLU
+- ReLU derivative
+- forward pass
+
+The forward pass uses:
+
+z = sum(weight × input) + bias
+
+a = max(0, z)
+
+### Test
+
+Weights:
+
+[0.5, 0.5]
+
+Bias:
+
+0.0
+
+Inputs:
+
+[2, 1]
+
+### Result
+
+Raw output:
+
+1.5
+
+ReLU output:
+
+1.5
+
+ReLU derivative:
+
+1
+
+### Lesson
+
+The neuron can now be represented as a reusable component instead of rewriting its forward-pass logic in every experiment.
+
+The neuron describes how an input is transformed. Training will remain a separate responsibility.
+
+### Status
+
+Experiment 011 complete.
