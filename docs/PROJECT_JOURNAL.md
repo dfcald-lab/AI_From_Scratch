@@ -2955,3 +2955,70 @@ Successful seeds preserve hidden gradients across many XOR examples during early
 This refines the earlier neuron-survival hypothesis. The important property may not be whether a hidden neuron remains numerically active, but whether the hidden layer continues receiving useful gradient information from a sufficiently broad portion of the training set.
 
 The next experiment should test this activation/gradient-coverage hypothesis directly.
+
+## Experiment 037 — Gradient Floor Rescue
+
+### Question
+
+Are failed seeds caused primarily by ReLU's zero derivative on negative hidden pre-activations?
+
+### Setup
+
+Compared the normal hidden ReLU against a controlled gradient-floor condition.
+
+- He initialization
+- 2-2-1 network
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 parameter updates
+- seeds 0–9
+
+The baseline used the standard ReLU derivative:
+
+- positive pre-activation: derivative 1
+- nonpositive pre-activation: derivative 0
+
+The gradient-floor condition kept the exact same ReLU forward function, but changed the hidden derivative for nonpositive pre-activations from 0 to 0.01.
+
+This isolates the effect of removing the exact zero-gradient condition without changing the hidden activation values.
+
+Success remained defined as final loss < 1e-6 with nonzero hidden-space separation.
+
+### Results
+
+Baseline:
+
+- successful seeds: 1, 2, 4, 8, 9
+- success rate: 5/10
+
+Gradient floor:
+
+- successful seeds: 1, 2, 4, 8, 9
+- success rate: 5/10
+
+The gradient floor changed the final hidden-space gap slightly for successful seeds but did not change which seeds succeeded.
+
+Failed seeds remained failed:
+
+- seed 0: loss 0.333335370, gap 0
+- seed 3: loss 0.333335740, gap 0
+- seed 5: loss 0.333359911, gap 0
+- seed 6: loss 0.333345190, gap 0
+- seed 7: loss 0.250019296, gap 0
+
+Seed 7 showed the largest improvement in loss, decreasing from approximately 0.3333 to 0.2500, but it still failed to create a separable hidden representation.
+
+All five successful seeds remained successful under the intervention.
+
+### Conclusion
+
+Eliminating exact zero hidden gradients is not sufficient to explain or prevent the seed-dependent failure.
+
+The forward representation remained identical to ReLU, while only the negative-side hidden derivative was changed. Despite this intervention, none of the five failed seeds became successful.
+
+This strengthens the conclusion from Experiments 035 and 036: the problem is not simply that gradients become exactly zero. Successful training appears to depend on whether the hidden representation develops in a useful direction and preserves enough structure across the training examples.
+
+The improvement for seed 7 shows that a gradient floor can alter the trajectory, but the resulting representation still did not become separable.
+
+The next experiment should investigate whether increasing hidden-layer capacity reduces the seed dependence by giving the optimizer more representational freedom.
