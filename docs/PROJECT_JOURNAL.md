@@ -1203,3 +1203,123 @@ The Layer coordinates those operations across the neurons.
 ### Status
 
 Experiment 015 complete.
+
+## Entry 017 — Reusable Multi-Layer Network
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Built a multi-layer neural network using the reusable Neuron and Layer components.
+
+Architecture:
+
+2 inputs
+→ 2 ReLU hidden neurons
+→ 1 linear output neuron
+
+This experiment replaced the manually named parameters from the earlier XOR experiment with reusable trainable Layer objects.
+
+### Training Data
+
+[0, 0] → 0
+[0, 1] → 1
+[1, 0] → 1
+[1, 1] → 0
+
+This is the XOR relationship.
+
+### Training
+
+Learning rate:
+
+0.05
+
+Epochs:
+
+1000
+
+The training loop performed:
+
+forward pass
+→ loss
+→ output-layer backward pass
+→ hidden-layer backward pass
+→ parameter updates
+
+### Results
+
+Epoch 1:
+
+Total loss ≈ 0.164122570751
+
+Epoch 10:
+
+Total loss ≈ 0.035717989313
+
+Epoch 100:
+
+Total loss ≈ 0.000920521315
+
+Epoch 500:
+
+Total loss ≈ 0.000000000041
+
+Epoch 1000:
+
+Total loss ≈ 0.000000000000
+
+### Final XOR Results
+
+Input [0, 0]:
+
+Expected = 0.0
+Predicted ≈ 0.000000000166
+
+Input [0, 1]:
+
+Expected = 1.0
+Predicted ≈ 0.999999999923
+
+Input [1, 0]:
+
+Expected = 1.0
+Predicted ≈ 0.999999999903
+
+Input [1, 1]:
+
+Expected = 0.0
+Predicted ≈ 0.000000000001
+
+The very small nonzero values are floating-point representations of values effectively equal to zero.
+
+### Observation
+
+The backward pass successfully propagated the learning signal from the output layer into the hidden layer.
+
+The reusable Layer abstraction can therefore participate in a complete multi-layer training process.
+
+### Lesson
+
+A neural network can be constructed by connecting reusable layers.
+
+Each layer performs its own forward computation and backward gradient calculation while passing information between layers.
+
+This separates the network into reusable components instead of requiring every weight and gradient to be manually written.
+
+### Important Understanding
+
+Backpropagation is not limited to one layer.
+
+The gradient can travel backward through multiple layers using the chain rule:
+
+output loss
+→ output layer
+→ hidden layer
+→ earlier layers
+
+This experiment demonstrates that mechanism with the project's own code.
+
+### Status
+
+Experiment 016 complete.
