@@ -343,3 +343,90 @@ The problem occurs when the prediction moves farther from the target and the los
 ### Status
 
 Experiment 004 complete.
+
+## Entry 006 — Multiple Inputs
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Expanded the neuron from one input to two inputs.
+
+The model structure became:
+
+prediction = w1 × x1 + w2 × x2 + bias
+
+Training data:
+
+(1, 1) → 6
+(2, 1) → 8
+(1, 2) → 9
+(3, 2) → 13
+(2, 3) → 14
+
+The underlying relationship was:
+
+y = 2x1 + 3x2 + 1
+
+The model was not given that relationship.
+
+### Initial Parameters
+
+w1 = 0.5
+w2 = 0.5
+bias = 0
+
+Learning rate:
+
+0.001
+
+Training epochs:
+
+1000
+
+### Result
+
+Final weight 1:
+
+2.007437596601594
+
+Final weight 2:
+
+2.9896676735925904
+
+Final bias:
+
+1.005845009552969
+
+### Unseen Test
+
+Test inputs:
+
+x1 = 4
+x2 = 2
+
+Expected:
+
+15
+
+Predicted:
+
+15.014930743144525
+
+### Observation
+
+The neuron learned separate weights for separate inputs and combined them to produce its prediction.
+
+The learned parameters were close to the relationship represented by the training data.
+
+### Lesson
+
+Each input has its own learned weight.
+
+The weight determines how strongly that input contributes to the prediction.
+
+With multiple inputs, the neuron can combine multiple signals before producing an output.
+
+### Status
+
+Experiment 005 complete.
