@@ -3434,3 +3434,82 @@ Seed 7 remained resistant to two-neuron rescue at every tested timing and contin
 These results reinforce the distinction between capacity and timing. Additional hidden units provide recoverable optimization freedom even late in training, but the amount of added capacity required can depend on the state of the trajectory.
 
 The next experiment should investigate why seed 7 specifically requires more added capacity than the other failed seeds.
+
+## Experiment 043 — Rescue Initialization Sensitivity
+
+### Question
+
+When two new hidden neurons are added to rescue a failed width-2 trajectory, is the outcome determined by the amount of capacity alone, or does the initialization of those new neurons matter?
+
+### Setup
+
+Used the width-2 network and late-capacity procedure from Experiment 040.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- new output weights initialized to zero
+- seeds 0–9
+
+Only the deterministic initialization of the two newly added neurons was varied.
+
+The original network initialization and entire pre-injection trajectory remained unchanged.
+
+Initialization offsets tested:
+
+0, 1, 2, 3, 4, 5, 10, and 100.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+The original width-2 control is 5/10 successful.
+
+With two neurons added at epoch 100, the success rate depended on the initialization offset:
+
+| Initialization offset | Successful runs | Mean final loss |
+|---|---:|---:|
+| 0 | 9/10 | 0.025000000000 |
+| 1 | 9/10 | 0.025000000000 |
+| 2 | 10/10 | 0.000000000000 |
+| 3 | 9/10 | 0.025000000000 |
+| 4 | 9/10 | 0.025000000000 |
+| 5 | 10/10 | 0.000000000000 |
+| 10 | 8/10 | 0.050000000000 |
+| 100 | 9/10 | 0.025000000000 |
+
+Seed 7, which was the only seed not rescued by two added neurons across all injection timings in Experiment 042, was rescued under five of the eight initialization offsets tested here:
+
+- offset 1
+- offset 2
+- offset 4
+- offset 5
+- offset 100
+
+It failed under:
+
+- offset 0
+- offset 3
+- offset 10
+
+Seed 3 also changed outcome depending on initialization, succeeding under most offsets but failing under offsets 1, 4, and 10.
+
+The best tested offsets, 2 and 5, produced 10/10 success.
+
+### Conclusion
+
+Two additional hidden neurons are sufficient to rescue seed 7, but the result depends on how those new neurons are initialized.
+
+This rules out the interpretation that seed 7 fundamentally requires three additional neurons. Experiment 041 showed that three neurons guarantee rescue under the tested initialization, while Experiment 043 shows that two neurons can also rescue seed 7 under suitable initializations.
+
+The results demonstrate that newly injected capacity creates additional optimization opportunities, but those opportunities depend on the starting location of the new neurons in parameter space.
+
+This also helps explain why the width-6 experiment had a much higher success rate: more independently initialized hidden neurons provide more chances for useful features to emerge.
+
+The next experiment should examine the initial activation coverage of the newly added neurons and determine whether successful rescue can be predicted from how the new neurons respond to the four XOR examples immediately after injection.
