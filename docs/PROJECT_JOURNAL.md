@@ -989,3 +989,106 @@ The layer can now be represented mathematically using weights, inputs, and biase
 ### Status
 
 Experiment 013 complete.
+
+
+## Entry 015 — Training Loop
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Turned the manually derived forward pass, loss calculation, ReLU gradient, backpropagation, and gradient descent update into a repeated training loop.
+
+The experiment used:
+
+- 2 inputs
+- 2 output neurons
+- ReLU activation
+- Mean squared error with a 1/2 factor
+- Learning rate: 0.01
+- Training steps: 100
+
+Initial parameters:
+
+W = [
+[2.0, 1.0],
+[3.0, 4.0]
+]
+
+b = [1.0, -2.0]
+
+Input:
+
+x = [5.0, 2.0]
+
+Target:
+
+y = [10.0, 20.0]
+
+### Initial Forward Pass
+
+The initial output was:
+
+[13.0, 21.0]
+
+Initial loss:
+
+5.0
+
+### Learning Process
+
+The training loop repeatedly performed:
+
+forward pass
+→ loss
+→ backpropagation
+→ gradient calculation
+→ gradient descent update
+
+Using a learning rate of 0.01, the model quickly moved toward the target.
+
+At step 10:
+
+- Loss: approximately 0.0040
+- Output: approximately [10.0847, 20.0282]
+
+At step 20:
+
+- Loss: approximately 0.0000 at the displayed precision
+- Output: approximately [10.0024, 20.0008]
+
+By step 30 and beyond, the printed output was effectively [10.0, 20.0].
+
+### Observation
+
+The model improved automatically when the same learning procedure was repeated.
+
+The loss decreased from 5.0 to a value effectively zero at the displayed precision.
+
+### Lesson
+
+A neural network learns through repetition of a small set of operations:
+
+1. Make a prediction.
+2. Measure the error.
+3. Calculate how the parameters contributed to that error.
+4. Adjust the parameters.
+5. Repeat.
+
+This experiment turns the backpropagation math into an actual training loop.
+
+### Important Understanding
+
+The training loop is the mechanism that repeatedly applies the gradients.
+
+The gradient determines the direction of the parameter update.
+
+The learning rate determines the size of the update.
+
+### Next Direction
+
+Replace the manually named weights and biases in this experiment with the reusable Layer and Neuron components already developed in the project.
+
+### Status
+
+Experiment 014 complete.
