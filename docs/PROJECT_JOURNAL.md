@@ -2791,3 +2791,73 @@ Successful seeds preserved several active hidden responses through the early tra
 This suggests that preserving a sufficiently rich hidden representation early in training may be a prerequisite for later geometric separation and successful XOR learning.
 
 The next experiment should isolate hidden-unit survival/activity as a causal variable rather than only measuring it as an outcome.
+
+## Experiment 035 — Hidden Neuron Death Guard
+
+### Question
+
+Is complete hidden-neuron death itself responsible for the seed-dependent failure observed in Experiment 034?
+
+### Setup
+
+Compared the normal training process against an intervention that prevents a hidden ReLU neuron from becoming completely inactive.
+
+- He initialization
+- 2-2-1 network
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 parameter updates
+- seeds 0–9
+
+The baseline used the standard training rule.
+
+The guarded condition monitored the two hidden neurons after each update. If a hidden neuron was inactive on all four XOR examples, that neuron's weights and bias were restored to their values from immediately before the update.
+
+Success remained defined as final loss < 1e-6 with nonzero hidden-space separation.
+
+### Results
+
+Baseline:
+
+- successful seeds: 1, 2, 4, 8, 9
+- success rate: 5/10
+
+Guarded:
+
+- successful seeds: 1, 2, 4, 8, 9
+- success rate: 5/10
+
+The intervention therefore did not increase the number of successful runs.
+
+For the successful seeds, the guard was never triggered:
+
+- seed 1: 0 interventions
+- seed 2: 0 interventions
+- seed 4: 0 interventions
+- seed 8: 0 interventions
+- seed 9: 0 interventions
+
+For the failed seeds, the guard triggered repeatedly:
+
+- seed 0: 3946 interventions
+- seed 3: 3954 interventions
+- seed 5: 4000 interventions
+- seed 6: 3998 interventions
+- seed 7: 4000 interventions
+
+Seeds 5 and 7 became completely inactive immediately and remained so under the guard. Seeds 0, 3, and 6 were also prevented from permanently entering the exact all-dead state, but this did not produce successful learning.
+
+The guarded results for seeds 0 and 6 retained small nonzero separation gaps, but their losses remained near 1/3 and therefore did not meet the success criterion.
+
+### Conclusion
+
+Preventing complete hidden-neuron death by itself did not improve XOR success.
+
+The successful seeds never required the guard, while the failed seeds repeatedly attempted to enter a completely inactive hidden-neuron state. Blocking that state did not cause the failed trajectories to discover the useful hidden representation required for XOR.
+
+This indicates that hidden-neuron death is likely associated with failed training but is not, by itself, the sole causal explanation for the remaining seed dependence.
+
+The important distinction is between merely keeping a neuron numerically active and preserving a hidden representation that provides useful gradient information for separating the XOR classes.
+
+The next experiment should therefore examine the quality and direction of the hidden gradients before neuron death, rather than treating neuron survival alone as the intervention target.
