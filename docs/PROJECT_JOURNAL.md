@@ -32,6 +32,9 @@ Phase 0 — Foundation
 
 ### Environment
 
+- Linux development environment
+- Python 3.x
+- Git repository
 
 ### Decision
 
