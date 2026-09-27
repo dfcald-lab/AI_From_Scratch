@@ -2626,3 +2626,92 @@ Therefore, learning-rate scale is now a strong candidate explanation for some of
 
 Next question: determine whether there is a reproducible relationship between learning rate and the probability of reaching a separable hidden representation.
 
+
+---
+
+## Experiment 033 — Learning Rate Stability Window
+
+Date: 2026-09-27
+
+### Question
+How does learning-rate magnitude affect the formation of a usable hidden representation and successful XOR training?
+
+### Setup
+Used the corrected full-batch implementation from Experiment 031.
+
+- He initialization
+- 2-2-1 network
+- XOR training data
+- full-batch gradient averaging
+- 4000 parameter updates
+- seeds 0–9
+- learning rates: 0.01, 0.025, 0.05, 0.10, 0.20
+
+Two outcomes were tracked:
+
+1. Hidden-space separability.
+2. Near-zero final loss (< 1e-6) with nonzero separation.
+
+### Findings
+
+#### Learning rate 0.01
+
+- separable runs: 2/10
+- near-zero-loss runs: 0/10
+- mean loss: 0.349609392756
+- mean gap: 0.015550920
+
+Seeds 2 and 4 developed nonzero separation but did not converge to near-zero loss.
+
+#### Learning rate 0.025
+
+- separable runs: 4/10
+- near-zero-loss runs: 0/10
+- mean loss: 0.222895230645
+- mean gap: 0.160115760
+
+Seeds 1, 2, 4, and 8 became separable, but their final losses remained above the near-zero threshold.
+
+#### Learning rate 0.05
+
+- separable runs: 5/10
+- near-zero-loss runs: 4/10
+- mean loss: 0.182302779168
+- mean gap: 0.242709185
+
+Seeds 1, 2, 4, 8, and 9 were separable. Seeds 1, 2, 4, and 8 reached near-zero loss.
+
+#### Learning rate 0.10
+
+- separable runs: 5/10
+- near-zero-loss runs: 5/10
+- mean loss: 0.166666666667
+- mean gap: 0.272111421
+
+Seeds 1, 2, 4, 8, and 9 reached near-zero loss and were separable.
+
+#### Learning rate 0.20
+
+- separable runs: 5/10
+- near-zero-loss runs: 5/10
+- mean loss: 0.166666666667
+- mean gap: 0.272730891
+
+The outcome was very similar to learning rate 0.10.
+
+### Conclusion
+
+Learning rate materially changes Larry's training trajectory.
+
+At 0.01, some seeds formed separable representations but training did not reach near-zero loss.
+
+Increasing the learning rate to 0.025 improved hidden-space separation and final loss, but still did not produce any near-zero-loss runs under the selected threshold.
+
+At 0.05, five seeds became separable and four reached near-zero loss.
+
+At 0.10 and 0.20, five seeds reached near-zero loss, with very similar aggregate behavior.
+
+This suggests that, for the current full-batch setup, increasing the learning rate from 0.01 toward approximately 0.10 improves the ability to escape poor trajectories and form useful representations. The results between 0.10 and 0.20 are already very similar, so simply increasing the learning rate further may not explain the remaining seed dependence.
+
+The next question should therefore examine what distinguishes the permanently failed seeds from the successful seeds after learning-rate effects have been accounted for.
+
