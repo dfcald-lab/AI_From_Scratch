@@ -866,3 +866,53 @@ The neuron describes how an input is transformed. Training will remain a separat
 ### Status
 
 Experiment 011 complete.
+
+## Entry 013 — Reusable Layer
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Created a reusable Layer class that contains multiple Neuron objects.
+
+The layer sends the same inputs to each neuron and collects their raw and activated outputs.
+
+### Test
+
+Inputs:
+
+[2, 1]
+
+Neuron 1:
+
+weights = [1.0, 2.0]
+bias = 0.0
+
+Neuron 2:
+
+weights = [3.0, 1.0]
+bias = 1.0
+
+### Result
+
+Raw outputs:
+
+[4.0, 8.0]
+
+Activated outputs:
+
+[4.0, 8.0]
+
+### Observation
+
+The layer successfully processed the same inputs through multiple neurons and returned their outputs as a collection.
+
+### Lesson
+
+A neural-network layer can be represented as a reusable collection of neurons.
+
+Each neuron has its own weights and bias while receiving the same input vector.
+
+### Status
+
+Experiment 012 complete.
