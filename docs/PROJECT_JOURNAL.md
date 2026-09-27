@@ -646,3 +646,103 @@ f'(z) = 1 when z > 0
 ### Status
 
 Experiment 007 complete.
+
+## Entry 009 — Trainable ReLU
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Added ReLU to a trainable neuron.
+
+The forward pass became:
+
+z = weight × input + bias
+
+prediction = max(0, z)
+
+The gradient became dependent on the derivative of ReLU:
+
+weight_gradient = 2 × error × input × ReLU_derivative(z)
+
+bias_gradient = 2 × error × ReLU_derivative(z)
+
+### Result
+
+Using:
+
+x = 2
+y = 5
+weight = 0.5
+bias = 0
+learning rate = 0.001
+
+the neuron remained in the positive region during the 20 training steps.
+
+The results matched the earlier gradient descent experiment because ReLU_derivative(z) remained 1.
+
+### Observation
+
+When z is positive, ReLU passes the value forward and its derivative is 1, allowing the gradient to pass backward.
+
+When z is negative, ReLU outputs 0 and its derivative is 0, blocking the gradient from reaching the weight and bias.
+
+### Lesson
+
+An activation function affects both the forward output and the backward learning signal.
+
+### Status
+
+Experiment 008 complete.
+
+## Entry 010 — ReLU Gradient Behavior
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Compared a positive and negative pre-activation value to observe how ReLU changes the gradient.
+
+### Positive z
+
+z = 1
+
+Prediction = 1
+
+Error = -4
+
+Loss = 16
+
+ReLU derivative = 1
+
+Weight gradient = -16
+
+Bias gradient = -8
+
+### Negative z
+
+z = -2
+
+Prediction = 0
+
+Error = -5
+
+Loss = 25
+
+ReLU derivative = 0
+
+Weight gradient = 0
+
+Bias gradient = 0
+
+### Observation
+
+A neuron can have a large prediction error while receiving a zero gradient when ReLU is inactive.
+
+### Lesson
+
+The size of the error alone does not determine the parameter update. The activation function can determine whether the gradient reaches the parameter.
+
+### Status
+
+Experiment 009 complete.
