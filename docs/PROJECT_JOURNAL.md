@@ -916,3 +916,76 @@ Each neuron has its own weights and bias while receiving the same input vector.
 ### Status
 
 Experiment 012 complete.
+
+## Entry 014 — Automatic Layer Construction
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Changed the Layer class so it can automatically create any requested number of neurons with the required number of input weights.
+
+Test configuration:
+
+- Inputs: 2
+- Neurons: 3
+- Random seed: 0
+- Bias for each neuron: 0
+
+### Parameter Count
+
+Each neuron requires:
+
+2 weights + 1 bias = 3 parameters
+
+Three neurons therefore require:
+
+3 × 3 = 9 parameters
+
+### Test Input
+
+[2, 1]
+
+### Result
+
+Neuron 1:
+
+Weights = [0.6888437030500962, 0.515908805880605]
+
+Raw output = 1.8935962119807974
+
+ReLU output = 1.8935962119807974
+
+Neuron 2:
+
+Weights = [-0.15885683833831, -0.4821664994140733]
+
+Raw output = -0.7998801760906933
+
+ReLU output = 0
+
+Neuron 3:
+
+Weights = [0.02254944273721704, -0.19013172509917142]
+
+Raw output = -0.14503283962473734
+
+ReLU output = 0
+
+### Observation
+
+All neurons received the same input but produced different results because each neuron had its own independently initialized weights.
+
+ReLU allowed one neuron to remain active while the other two produced zero outputs.
+
+### Lesson
+
+A layer can automatically create and manage multiple neurons.
+
+Random initialization gives different neurons different starting parameters.
+
+The layer can now be represented mathematically using weights, inputs, and biases as vectors and matrices.
+
+### Status
+
+Experiment 013 complete.
