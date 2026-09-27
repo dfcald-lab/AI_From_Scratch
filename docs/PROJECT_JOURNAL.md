@@ -3588,3 +3588,87 @@ The strongest concentration of successful cases occurred at 3/4 coverage, but 2/
 This indicates that the structure of the activation pattern may matter more than raw coverage count.
 
 The next experiment should therefore compare the exact activation patterns of successful and failed rescue cases and determine whether particular feature patterns are consistently associated with successful recovery.
+
+## Experiment 045 — Rescue Activation Pattern Analysis
+
+### Question
+
+Does the exact activation pattern of the two newly added hidden neurons predict whether a failed width-2 trajectory will be rescued?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–044.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- new output weights initialized to zero
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+Immediately after injection, each newly added neuron was represented by a four-bit activation pattern over:
+
+- [0,0]
+- [0,1]
+- [1,0]
+- [1,1]
+
+Neuron order was canonicalized, so swapping the two new neurons produced the same pattern representation.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+Across all 80 seed/initialization combinations:
+
+- successful rescue cases: 73/80
+- failed rescue cases: 7/80
+
+The most common successful patterns included:
+
+- 0010|0111: 15/15 successful
+- 0100|0111: 10/10 successful
+- 0101|0111: 10/10 successful
+- 0010|0100: 10/10 successful
+
+Other patterns were less reliable.
+
+For example:
+
+- 0000|0011: 6/7 successful
+- 0000|0100: 3/4 successful
+- 0000|0101: 11/14 successful
+- 0000|0111: 2/3 successful
+- 0100|0101: 2/3 successful
+
+There was also a successful case with:
+
+- 0000|0000: 1/1 successful
+
+The seven failures occurred under several different patterns:
+
+- 0000|0101: three failures
+- 0000|0011: one failure
+- 0000|0100: one failure
+- 0100|0101: one failure
+- 0000|0111: one failure
+
+### Conclusion
+
+The exact initial activation pattern of the two new neurons is associated with rescue reliability, but it is not sufficient to determine the outcome.
+
+Several patterns were perfectly successful in the tested sample, while other patterns produced both successful and failed runs.
+
+The successful 0000|0000 case is especially important: newly added neurons did not need to activate any of the four examples immediately after injection in order for the network to eventually reach zero loss.
+
+Therefore, initial activation coverage and exact activation pattern are not complete explanations of rescue.
+
+The results indicate that the newly added neurons can acquire useful behavior during subsequent optimization even when their initial activation is limited or absent.
+
+The next experiment should examine the first few updates after injection and measure how quickly the newly added neurons acquire nonzero output weights, activation coverage, and useful gradients.
