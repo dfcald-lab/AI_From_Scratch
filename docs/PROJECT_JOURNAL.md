@@ -3672,3 +3672,113 @@ Therefore, initial activation coverage and exact activation pattern are not comp
 The results indicate that the newly added neurons can acquire useful behavior during subsequent optimization even when their initial activation is limited or absent.
 
 The next experiment should examine the first few updates after injection and measure how quickly the newly added neurons acquire nonzero output weights, activation coverage, and useful gradients.
+
+## Experiment 046 — Rescue Early Dynamics
+
+### Question
+
+What happens during the first few updates after capacity is injected, and can early new-neuron dynamics distinguish successful rescues from failed rescues?
+
+### Setup
+
+Used the configuration from Experiments 043–045.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- zero initial output weights for the new neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+After injection, measurements were recorded at relative steps:
+
+- 0
+- 1
+- 2
+- 3
+- 5
+- 10
+- 20
+
+For the newly added neurons, the experiment measured:
+
+- active examples per neuron
+- mean absolute output weight
+- mean absolute hidden gradient
+- zero-gradient fraction
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+Across the 80 seed/initialization combinations:
+
+- successful rescues: 73
+- failed rescues: 7
+
+At the injection moment, new output weights were zero and consequently the newly added hidden neurons had zero hidden-layer gradient.
+
+The successful and failed groups differed in initial activation support:
+
+| Relative step | Successful mean active examples per new neuron | Failed mean active examples per new neuron |
+|---|---:|---:|
+| 0 | 1.575 | 1.071 |
+| 1 | 1.575 | 1.071 |
+| 2 | 2.226 | 1.571 |
+| 3 | 2.055 | 1.214 |
+| 5 | 2.048 | 1.214 |
+| 10 | 2.089 | 1.214 |
+| 20 | 2.110 | 1.143 |
+
+The successful group also developed larger new-neuron output weights and hidden gradients during the first 20 updates.
+
+At relative step 20:
+
+- successful mean absolute new-neuron output weight: 0.057198
+- failed mean absolute new-neuron output weight: 0.044954
+- successful mean absolute new-neuron gradient: 0.011009
+- failed mean absolute new-neuron gradient: 0.009282
+
+The zero-gradient fraction showed a stronger difference:
+
+- successful group: approximately 0.279
+- failed group: approximately 0.476
+
+### Failed Rescue Cases
+
+The seven failed cases showed limited early support for the newly added neurons.
+
+Examples included:
+
+- seed 7, offset 0: activity remained approximately 2,0 across the first 20 updates
+- seed 3, offset 1: activity remained approximately 0,2
+- seed 7, offset 3: activity remained approximately 0,2
+- seed 3, offset 4: activity remained approximately 2,0
+- seed 3, offset 10: activity increased to approximately 2,2 but still failed
+- seed 7, offset 10: activity remained limited to approximately 0,1–0,2
+- seed 5, offset 100: activity remained approximately 3,0
+
+These cases show that simply activating both neurons is not sufficient. For example, seed 3 with offset 10 eventually had both new neurons active on multiple examples but still failed.
+
+### Conclusion
+
+Successful rescue trajectories generally developed broader and stronger new-neuron participation during the first 20 updates after injection.
+
+Compared with failed rescues, successful cases showed:
+
+- more active examples per new neuron
+- larger output weights
+- larger hidden gradients
+- a smaller fraction of zero hidden gradients
+
+However, these measurements do not establish a single deterministic threshold. Some successful cases began with very limited activation, while at least one failed case reached relatively broad activation.
+
+The results therefore identify early new-neuron participation as a useful correlate of successful rescue, but not yet a sufficient causal explanation.
+
+The next experiment should test whether giving newly added neurons nonzero output connections at injection changes the result by allowing them to receive hidden-layer gradients immediately, while keeping their hidden initialization fixed.
