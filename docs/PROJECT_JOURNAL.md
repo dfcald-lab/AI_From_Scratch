@@ -546,3 +546,103 @@ Explore activation functions and the role they play in allowing neural networks 
 ### Status
 
 Experiment 006 complete.
+
+## Entry 008 — Activation Function: ReLU
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Introduced the ReLU activation function and observed how it transforms a neuron's raw output.
+
+The raw neuron was:
+
+z = wx + b
+
+with:
+
+w = 2
+b = -3
+
+The activation function was:
+
+a = max(0, z)
+
+### Results
+
+Input -2:
+
+z = -7
+ReLU = 0
+
+Input -1:
+
+z = -5
+ReLU = 0
+
+Input 0:
+
+z = -3
+ReLU = 0
+
+Input 1:
+
+z = -1
+ReLU = 0
+
+Input 2:
+
+z = 1
+ReLU = 1
+
+Input 3:
+
+z = 3
+ReLU = 3
+
+Input 4:
+
+z = 5
+ReLU = 5
+
+### Observation
+
+ReLU passes positive values through unchanged and changes negative values to zero.
+
+### Second Example
+
+Using:
+
+w = 3
+b = -4
+
+the raw outputs for inputs 1, 2, and 3 were:
+
+-1
+2
+5
+
+After ReLU:
+
+0
+2
+5
+
+### Lesson
+
+An activation function transforms the output of a neuron.
+
+ReLU itself does not learn parameters. It changes the forward signal and determines whether a gradient can pass backward.
+
+For ReLU:
+
+f(z) = max(0, z)
+
+and its derivative is:
+
+f'(z) = 0 when z < 0
+f'(z) = 1 when z > 0
+
+### Status
+
+Experiment 007 complete.
