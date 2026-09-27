@@ -3339,3 +3339,98 @@ The result also provides a concrete capacity threshold for this specific experim
 This threshold should not be interpreted as a universal requirement. It depends on the XOR task, network architecture, learning rate, initialization procedure, injection time, and deterministic initialization of the newly added neurons.
 
 The next experiment should determine whether the rescue threshold depends on when the capacity is added, and whether the same small amount of added capacity can rescue trajectories much later in training.
+
+## Experiment 042 — Capacity Injection Timing
+
+### Question
+
+Does the effectiveness of added hidden capacity depend strongly on when the capacity is introduced?
+
+### Setup
+
+Started every run with the same width-2 hidden ReLU network used in Experiments 040–041.
+
+- He initialization
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- seeds 0–9
+- injection epochs: 0, 25, 50, 100, 250, 500, 1000, 2000, 3000
+- additional neurons tested: 1 and 2
+
+At the selected injection epoch, new hidden neurons were added with fresh He initialization and zero bias.
+
+Their output-layer weights were initialized to zero so that the intervention did not immediately change the network prediction at the injection point.
+
+The width-2 network with no injection served as the control.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+The width-2 control reproduced the previous result:
+
+- successful seeds: 1, 2, 4, 8, 9
+- success rate: 5/10
+- mean final loss: 0.166666666667
+
+Adding one hidden neuron produced:
+
+| Injection epoch | Successful runs | Mean final loss |
+|---|---:|---:|
+| 0 | 7/10 | 0.091666666667 |
+| 25 | 7/10 | 0.091666666667 |
+| 50 | 7/10 | 0.091666666667 |
+| 100 | 7/10 | 0.091666666667 |
+| 250 | 6/10 | 0.116666666667 |
+| 500 | 6/10 | 0.116666666667 |
+| 1000 | 6/10 | 0.116666666667 |
+| 2000 | 6/10 | 0.116666666667 |
+| 3000 | 6/10 | 0.116666667002 |
+
+Adding two hidden neurons produced:
+
+| Injection epoch | Successful runs | Mean final loss |
+|---|---:|---:|
+| 0 | 9/10 | 0.025000000000 |
+| 25 | 9/10 | 0.025000000000 |
+| 50 | 9/10 | 0.025000000000 |
+| 100 | 9/10 | 0.025000000000 |
+| 250 | 9/10 | 0.025000000000 |
+| 500 | 9/10 | 0.025000000000 |
+| 1000 | 9/10 | 0.025000000000 |
+| 2000 | 9/10 | 0.025000000000 |
+| 3000 | 9/10 | 0.025000010022 |
+
+The identity of the rescued seeds was also highly stable.
+
+With one added neuron at epochs 0–100, successful seeds were:
+
+- 1, 2, 3, 4, 6, 8, 9
+
+At epochs 250 and later, seed 3 was no longer rescued, reducing success to 6/10.
+
+With two added neurons, successful seeds were consistently:
+
+- 0, 1, 2, 3, 4, 5, 6, 8, 9
+
+Seed 7 remained the only failure for every two-neuron injection timing.
+
+At epoch 3000, seed 3 reached loss 0.000000100217 with two added neurons, which still satisfied the selected success threshold.
+
+### Conclusion
+
+Capacity injection timing has a smaller effect than the amount of added capacity.
+
+Two additional hidden neurons rescued 9/10 seeds at every tested injection point, including very late injections at epochs 1000, 2000, and 3000. This shows that useful new capacity can remain effective even after most of the original width-2 training trajectory has already unfolded.
+
+One additional neuron was effective through epoch 100, producing 7/10 success, but its effectiveness decreased after epoch 250 to 6/10. This indicates that a single new degree of freedom can become insufficient once the original trajectory has progressed further.
+
+Seed 7 remained resistant to two-neuron rescue at every tested timing and continued to require the three-neuron intervention identified in Experiment 041.
+
+These results reinforce the distinction between capacity and timing. Additional hidden units provide recoverable optimization freedom even late in training, but the amount of added capacity required can depend on the state of the trajectory.
+
+The next experiment should investigate why seed 7 specifically requires more added capacity than the other failed seeds.
