@@ -175,3 +175,111 @@ Increasing the number of training steps moved both learned parameters closer to 
 A simple model can learn more than one parameter. Weight determines how strongly the input contributes, while bias shifts the prediction.
 
 This is the first experiment in which the model behaves like a tiny neuron with a learned weight and bias.
+
+## Entry 005 — Learning Rate Experiment
+
+**Date:** 2026-09-26
+
+### Experiment
+
+Tested five learning rates using the same training example:
+
+x = 2
+y = 5
+
+Initial parameters:
+
+w = 0.5
+b = 0
+
+The learning rates tested were:
+
+0.0001
+0.001
+0.01
+0.1
+0.21
+
+### Results
+
+#### Learning rate: 0.0001
+
+After 20 steps:
+
+- Prediction: 1.0753198605424035
+- Loss: 15.403114197052899
+- Weight: 0.5316978162727445
+- Bias: 0.015848908136372256
+
+Learning was very slow.
+
+#### Learning rate: 0.001
+
+After 20 steps:
+
+- Prediction: 1.695325504657653
+- Loss: 10.920873520166197
+- Weight: 0.7913488998444306
+- Bias: 0.14567444992221532
+
+The model improved steadily but had not reached the target.
+
+#### Learning rate: 0.01
+
+After 20 steps:
+
+- Prediction: 4.459659312930802
+- Loss: 0.2919680581024125
+- Weight: 1.905477352655089
+- Bias: 0.7027386763275443
+
+The model learned much faster and moved close to the target.
+
+#### Learning rate: 0.1
+
+The model reached the target:
+
+Prediction = 5.0
+Loss = 0.0
+
+Final parameters:
+
+- Weight: 2.1
+- Bias: 0.8
+
+#### Learning rate: 0.21
+
+The model became unstable.
+
+After 20 steps:
+
+- Prediction: 29.46363617936579
+- Loss: 598.4694951163748
+- Weight: -8.663999918920945
+- Bias: -4.581999959460473
+
+### Observation
+
+The learning rate controls how large each parameter update is.
+
+A learning rate that is too small can make learning very slow.
+
+A suitable learning rate can move the model toward the target efficiently.
+
+A learning rate that is too large can cause the model to overshoot the target repeatedly and become unstable.
+
+### Lesson
+
+Gradient descent depends not only on the direction of the gradient, but also on the size of each step.
+
+The learning rate determines that step size.
+
+### Additional Observation
+
+A negative prediction is not inherently an error. It simply means the model's current numerical output is below zero.
+
+The problem occurs when the prediction moves farther from the target and the loss increases.
+
+### Status
+
+Experiment 004 complete.
