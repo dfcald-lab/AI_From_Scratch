@@ -1795,3 +1795,90 @@ Experiment 020 complete.
 ### Next Direction
 
 Investigate how initialization can be chosen systematically instead of selecting a scale manually.
+
+
+## Entry 022 — He Initialization
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Compared the project's existing uniform random initialization with He initialization.
+
+The same XOR network and training procedure were used across ten random seeds.
+
+Architecture:
+
+2 inputs
+→ 2 ReLU hidden neurons
+→ 1 linear output neuron
+
+Training data:
+
+[0, 0] → 0
+[0, 1] → 1
+[1, 0] → 1
+[1, 1] → 0
+
+Learning rate:
+
+0.05
+
+Training epochs:
+
+1000
+
+The He initialization was applied to the ReLU hidden layer.
+
+The linear output layer was left with its existing initialization.
+
+### He Initialization
+
+For the ReLU hidden layer, the standard deviation was calculated as:
+
+sqrt(2 / fan_in)
+
+Weights were sampled from a zero-centered normal distribution using that standard deviation.
+
+### Results
+
+Uniform initialization:
+
+Successful runs = 2/10
+
+He initialization:
+
+Successful runs = 3/10
+
+### Observation
+
+He initialization produced one additional successful run in this ten-seed test.
+
+However, most runs still did not reach the success threshold.
+
+The result therefore shows that initialization strategy can affect training behavior, but this experiment does not establish that He initialization is universally better.
+
+### Lesson
+
+Initialization strategies are designed around the behavior of the activation function and the number of inputs to a layer.
+
+For ReLU networks, He initialization uses a scale based on the layer's input size.
+
+This gives a more principled starting point than selecting an arbitrary weight scale.
+
+### Important Understanding
+
+The initialization experiment also highlighted an important distinction:
+
+- ReLU hidden layers use one type of initialization strategy.
+- A linear output layer may require different treatment.
+
+Initialization should therefore be considered together with the layer's activation function and architecture.
+
+### Status
+
+Experiment 021 complete.
+
+### Next Direction
+
+Measure the actual activation and gradient values produced by different initialization strategies to understand why some initializations train successfully while others become stuck.
