@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Secrets / local configuration
+.env
+*.env
+*.key
+*.pem
+*.crt
+secrets/
+credentials/
+
+# Private/local data
+data/*
+!data/.gitkeep
+
+# Model files
+models/*
+!models/.gitkeep
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
