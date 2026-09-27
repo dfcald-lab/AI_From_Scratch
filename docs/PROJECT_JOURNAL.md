@@ -2138,3 +2138,52 @@ Initialization determines the starting geometry, but training dynamics can eithe
 
 The next question is when the separation transition occurs and what changes immediately before the network becomes separable or loses separability.
 
+
+---
+
+## Experiment 027 — Separability Transition Timeline
+
+Date: 2026-09-27
+
+### Question
+At what point during training does the hidden representation become separable, or lose separability?
+
+### Setup
+Used the same He-initialized 2-2-1 XOR network from Experiments 024–026.
+
+Instead of checking only selected checkpoints, hidden-space separability was evaluated after every training epoch from 1 through 1000.
+
+Recorded every transition between:
+- separable
+- nonseparable
+
+For every transition, the hidden representation and loss were recorded.
+
+### Findings
+
+Successful runs developed separability during training:
+
+- Seed 8: nonseparable -> separable at epoch 80.
+- Seed 2: nonseparable -> separable at epoch 131.
+- Seed 4: nonseparable -> separable at epoch 146.
+
+All three ultimately reached essentially zero loss.
+
+Failed runs could also lose an initially separable representation:
+
+- Seed 6: separable -> nonseparable at epoch 1.
+- Seed 0: separable -> nonseparable at epoch 27.
+
+These runs eventually converged to loss near 0.333.
+
+Four other failed seeds (1, 3, 5, and 7) never crossed into separability during the 1000-epoch run.
+
+Seed 9 also remained nonseparable throughout training and converged to a loss near 0.25.
+
+### Conclusion
+Training success is associated with entering and maintaining a linearly separable hidden representation.
+
+The experiment also shows that separability is not determined solely by initialization. Training can create the required representation or destroy one that existed initially.
+
+The next question is what changes immediately before these separability transitions.
+
