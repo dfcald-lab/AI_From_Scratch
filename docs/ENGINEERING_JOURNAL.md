@@ -51,3 +51,79 @@ We want to see the learning process directly instead of hiding it behind a libra
 
 Phase 0 — Foundation  
 Preparing for Phase 1 — First Learning System
+
+## Entry 003 — First Learning Experiment
+
+**Date:** 2026-09-26
+
+### Experiment
+
+A one-parameter learning system was created using only Python's standard library.
+
+The model:
+
+prediction = weight × input
+
+Training examples:
+
+1 → 2
+2 → 4
+3 → 6
+4 → 8
+5 → 10
+
+Initial weight:
+
+0.5
+
+Learning rate:
+
+0.001
+
+Training epochs:
+
+50
+
+### Result
+
+Final weight:
+
+1.9944572607243007
+
+Test input:
+
+7
+
+Test prediction:
+
+13.961200825070105
+
+The value 7 was not included in the training examples.
+
+### Observation
+
+The system learned an approximation of the relationship y = 2x and generalized it to an unseen input.
+
+### Lesson
+
+A learning system can improve a parameter by measuring error and repeatedly adjusting that parameter.
+
+This experiment introduced:
+
+- prediction
+- error
+- loss
+- gradient
+- learning rate
+- repeated training
+- generalization
+
+### Important Understanding
+
+The model does not contain the rule "multiply by 2."
+
+It contains a learned parameter that moved toward a value that minimizes its error on the examples.
+
+### Next Direction
+
+Separate training from evaluation and test the learner on inputs it has never seen.
