@@ -2187,3 +2187,135 @@ The experiment also shows that separability is not determined solely by initiali
 
 The next question is what changes immediately before these separability transitions.
 
+
+---
+
+## Experiment 028 — Transition Microscope
+
+Date: 2026-09-27
+
+### Question
+What changes immediately before and after the hidden representation becomes separable or loses separability?
+
+### Setup
+Used He initialization with the same 2-2-1 XOR network.
+
+Focused on the five seeds with meaningful separability transitions from Experiment 027:
+- Seed 0: YES -> NO at epoch 27
+- Seed 2: NO -> YES at epoch 131
+- Seed 4: NO -> YES at epoch 146
+- Seed 6: YES -> NO at epoch 1
+- Seed 8: NO -> YES at epoch 80
+
+For each transition, inspected a five-epoch window before and after the transition.
+
+Recorded:
+- loss
+- hidden-space separation gap
+- hidden activations for all four inputs
+- output weights and bias
+- mean hidden-neuron gradients
+- zero-gradient fractions
+
+### Findings
+
+#### Seed 0 — separability lost
+
+Before the transition, the hidden representation was still separable but the gap was shrinking:
+
+- epoch 22: gap 0.084172239
+- epoch 23: gap 0.065868940
+- epoch 24: gap 0.047404318
+- epoch 25: gap 0.029383488
+- epoch 26: gap 0.011260454
+
+At epoch 27 the gap reached zero.
+
+The important change was neuron 0 becoming inactive for the [1,0] input:
+
+- epoch 26: neuron 0 activation for [1,0] = 0.011262
+- epoch 27: neuron 0 activation for [1,0] = 0.000000
+
+At the transition, neuron 0's mean gradient became exactly zero and its zero-gradient fraction became 1.000.
+
+Afterward, neuron 0 remained permanently inactive and the representation remained nonseparable.
+
+#### Seed 6 — separability lost immediately
+
+The network began with a separable representation with gap 0.072356197.
+
+After the first training epoch, the [0,1] activation of neuron 1 reached zero:
+
+- epoch 0: neuron 1 [0,1] = 0.073127
+- epoch 1: neuron 1 [0,1] = 0.000000
+
+Neuron 1's mean gradient became exactly zero and its zero-gradient fraction became 1.000.
+
+The separation gap immediately dropped to zero and remained there.
+
+#### Seed 2 — separability formed without neuron death
+
+The network was nonseparable through epoch 130.
+
+At epoch 131, it became separable with gap 0.004320596.
+
+The hidden points were:
+
+- [0,0] -> (0.000000, 0.015828)
+- [0,1] -> (0.000000, 0.011241)
+- [1,0] -> (1.416142, 0.515809)
+- [1,1] -> (0.096308, 0.511223)
+
+Both hidden neurons remained trainable. Mean gradients were nonzero for both neurons.
+
+The separation gap then increased during subsequent epochs.
+
+#### Seed 4 — separability formed through a geometric boundary crossing
+
+The representation remained nonseparable through epoch 145.
+
+At epoch 146, the gap became positive:
+
+0.002305559
+
+The transition occurred while both neurons remained active and trainable.
+
+The hidden points moved only slightly, but their geometric ordering changed enough for the two class segments to stop intersecting.
+
+The gap then increased over subsequent epochs.
+
+#### Seed 8 — gradual geometric separation
+
+The network remained nonseparable through epoch 79.
+
+At epoch 80 the gap became positive:
+
+0.004042234
+
+No hidden neuron became permanently inactive.
+
+Between epochs 75 and 80, the hidden representations moved continuously while the gap changed from zero to positive.
+
+The gap then grew rapidly:
+
+- epoch 80: 0.004042234
+- epoch 81: 0.019419898
+- epoch 82: 0.034943003
+- epoch 83: 0.050594217
+- epoch 84: 0.066354879
+- epoch 85: 0.082205062
+
+### Conclusion
+
+Experiment 028 identifies two different transition mechanisms.
+
+1. A separable representation can be destroyed when a ReLU neuron crosses zero for an important training input. When this happens, the corresponding gradient becomes permanently zero and the neuron can no longer move that input back into the active region.
+
+2. A separable representation can also form without neuron death. In successful seeds 2, 4, and 8, the hidden points gradually move until the positive and negative class segments become geometrically separable.
+
+Therefore, the important variable is not simply whether neurons are alive.
+
+The deeper variable is whether training dynamics move the hidden representation toward or away from a geometry that the final linear neuron can separate.
+
+Next question: determine whether the gradient direction itself predicts whether the hidden representation will become more separable or less separable.
+
