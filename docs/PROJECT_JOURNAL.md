@@ -1882,3 +1882,81 @@ Experiment 021 complete.
 ### Next Direction
 
 Measure the actual activation and gradient values produced by different initialization strategies to understand why some initializations train successfully while others become stuck.
+
+## Entry 023 — Activation and Gradient Measurements
+
+### Question
+
+Why do different initialization strategies produce different training behavior?
+
+Experiment 022 measured the initial hidden-layer ReLU activations and gradients produced by uniform and He initialization across the same ten seeds used in Experiment 021.
+
+### Results
+
+Uniform initialization:
+
+- Active activation fraction = 0.325
+- Mean activation = 0.215116
+- Mean absolute gradient = 0.111849
+- Zero-gradient fraction = 0.750000
+- Successful runs = 2/10
+
+He initialization:
+
+- Active activation fraction = 0.4375
+- Mean activation = 0.439705
+- Mean absolute gradient = 0.153237
+- Zero-gradient fraction = 0.666667
+- Successful runs = 3/10
+
+### Observation
+
+He initialization produced more active hidden-layer ReLU outputs on average.
+
+It also produced a lower fraction of zero gradients and a higher mean absolute gradient than uniform initialization.
+
+One uniform-initialization run had a completely inactive hidden layer:
+
+- active activation fraction = 0.000
+- zero-gradient fraction = 1.000
+- final loss = 0.500000863377
+- success = False
+
+This provides a concrete example of a network becoming stuck because the ReLU hidden layer did not pass useful gradients during the measured samples.
+
+### Interpretation
+
+The measurements support the idea that initialization affects training indirectly through the distribution of activations and gradients.
+
+For this network, He initialization produced a healthier initial distribution than the tested uniform initialization, but the difference was not large enough to make every run successful.
+
+The experiment therefore explains part of the behavior observed in Experiment 021 without establishing that activation statistics alone determine whether training succeeds.
+
+### Lesson
+
+Initialization is not only about the initial size of the weights.
+
+It also affects:
+
+- which ReLU units are active,
+- how much signal reaches later layers,
+- how much gradient can propagate backward,
+- and whether a unit can become inactive and remain difficult to train.
+
+### Important Understanding
+
+A useful way to study neural-network training is to connect three levels of evidence:
+
+1. Initialization values
+2. Activation and gradient behavior
+3. Final training outcome
+
+Experiment 022 connects the first and second levels and provides a measurable explanation for part of the third.
+
+### Status
+
+Experiment 022 complete.
+
+### Next Direction
+
+Test whether activation and gradient behavior changes over the course of training by measuring these values at multiple checkpoints rather than only at initialization.
