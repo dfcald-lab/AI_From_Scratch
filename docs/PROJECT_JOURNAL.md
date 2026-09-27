@@ -1960,3 +1960,123 @@ Experiment 022 complete.
 ### Next Direction
 
 Test whether activation and gradient behavior changes over the course of training by measuring these values at multiple checkpoints rather than only at initialization.
+
+## Experiment 023 — Training Activation Checkpoints
+
+Date: 2026-09-27
+
+### Question
+Does initialization affect activation survival and gradient flow during training?
+
+### Setup
+Compared uniform initialization against He initialization using:
+- XOR training data
+- 2 input neurons
+- 2 hidden ReLU neurons
+- 1 linear output neuron
+- learning rate 0.05
+- 1000 epochs
+- seeds 0–9
+- checkpoints 0, 1, 10, 100, 500, 1000
+
+### Findings
+He initialization produced stronger overall training behavior than uniform initialization, but remained highly seed-dependent.
+
+Uniform initialization produced complete activation collapse for some seeds. He initialization reduced the frequency and severity of complete collapse, but did not eliminate it.
+
+Successful He seeds reached near-zero loss, while several seeds converged to loss plateaus around 0.25 or 0.333.
+
+### Conclusion
+Initialization is a major contributor to training stability, but initialization alone does not explain the seed-dependent failures.
+
+Next question: determine whether individual hidden neurons die during training or whether failures can occur while neurons remain active.
+
+---
+
+## Experiment 024 — Individual Neuron Lifetime
+
+Date: 2026-09-27
+
+### Question
+When He initialization fails, do individual hidden ReLU neurons die at initialization or during training?
+
+### Setup
+Used the same network and training procedure as Experiment 023, with He initialization only.
+
+Measured each hidden neuron independently at epochs 0, 1, 10, 100, 500, and 1000:
+- active fraction
+- mean activation
+- mean absolute gradient
+- zero-gradient fraction
+- activation pattern across the four XOR inputs
+- weight norm
+
+### Findings
+Two distinct failure modes appeared.
+
+1. Dead-neuron failure:
+Some neurons were already completely inactive at epoch 0, while others became permanently inactive during training.
+
+Examples:
+- Seed 5: neuron 0 was dead at initialization.
+- Seed 7: neuron 1 was dead at initialization.
+- Seed 6: neuron 1 died by epoch 1.
+- Seed 0: neuron 0 died between epochs 10 and 100.
+- Seed 3: neuron 1 died between epochs 10 and 100.
+
+2. Non-dead failure:
+Seeds 1 and 9 did not lose both neurons, yet still converged to a loss plateau near 0.25.
+
+### Conclusion
+Neuron death is a real failure mechanism, but it is not the complete explanation for failed training.
+
+There is another failure mode in which hidden neurons remain active but learn a representation that does not allow the final linear neuron to solve XOR.
+
+Next question: inspect the hidden representation produced by successful and unsuccessful seeds.
+
+---
+
+## Experiment 025 — Hidden Representation
+
+Date: 2026-09-27
+
+### Question
+When neurons survive, does the learned hidden representation determine whether XOR can be solved?
+
+### Setup
+Used the same He-initialized 2-2-1 network and training procedure.
+
+At epochs 0, 1, 10, 100, 500, and 1000, recorded:
+- hidden neuron activations for all four XOR inputs
+- output weights
+- output bias
+- predictions
+
+### Findings
+Successful runs developed hidden representations that allowed the linear output neuron to separate the XOR cases.
+
+Seed 2 eventually produced:
+- [0,0] -> prediction 0
+- [0,1] -> prediction 1
+- [1,0] -> prediction 1
+- [1,1] -> prediction 0
+
+Seed 4 and seed 8 similarly reached essentially perfect XOR predictions.
+
+Failed runs can retain active neurons without producing a useful separable representation.
+
+For example, seed 1 retains active hidden units but eventually predicts approximately:
+- [0,0] -> 0.5128
+- [0,1] -> 0.5128
+- [1,0] -> 1.0000
+- [1,1] -> 0.0000
+
+This produces a loss plateau because two inputs remain indistinguishable to the learned representation.
+
+### Conclusion
+The experiments now show that seed-dependent failure has at least two mechanisms:
+
+1. ReLU neurons can become permanently inactive.
+2. Neurons can remain active but converge to a hidden representation that cannot support the required XOR separation.
+
+Experiment 026 should isolate the geometry of the hidden representation and determine what property distinguishes successful representations from failed ones.
