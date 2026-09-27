@@ -3513,3 +3513,78 @@ The results demonstrate that newly injected capacity creates additional optimiza
 This also helps explain why the width-6 experiment had a much higher success rate: more independently initialized hidden neurons provide more chances for useful features to emerge.
 
 The next experiment should examine the initial activation coverage of the newly added neurons and determine whether successful rescue can be predicted from how the new neurons respond to the four XOR examples immediately after injection.
+
+## Experiment 044 — Rescue Activation Coverage
+
+### Question
+
+Can the success of a two-neuron rescue be predicted from how broadly the newly added neurons activate across the XOR training examples immediately after injection?
+
+### Setup
+
+Used the rescue configuration from Experiment 043.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- new output weights initialized to zero
+- seeds 0–9
+- 8 deterministic initialization offsets for the newly added neurons
+
+Immediately after injection, the activation pattern of each new neuron was recorded over:
+
+- [0,0]
+- [0,1]
+- [1,0]
+- [1,1]
+
+The number of XOR examples activated by either new neuron was then counted as activation coverage.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+Across the 10 seeds and 8 initialization offsets:
+
+- successful rescue cases: 73/80
+- failed rescue cases: 7/80
+
+Activation coverage among successful and failed cases was:
+
+| Examples covered by the two new neurons | Successful | Failed |
+|---|---:|---:|
+| 0/4 | 1 | 0 |
+| 1/4 | 3 | 1 |
+| 2/4 | 29 | 5 |
+| 3/4 | 40 | 1 |
+
+Coverage therefore showed an association with rescue, particularly because most successful cases covered 3 of the 4 examples.
+
+However, coverage was not sufficient to predict success.
+
+Examples of this include:
+
+- several successful cases with only 2/4 coverage
+- three successful cases with 1/4 coverage
+- one successful case with 0/4 coverage
+- one failed case with 3/4 coverage
+
+The 0/4 successful case occurred for a seed that was already capable of solving the task from the original width-2 trajectory, so the newly added neurons were not required for that run.
+
+The failed cases also showed that simply covering more examples does not guarantee a successful rescue.
+
+### Conclusion
+
+Initial activation coverage of the newly added neurons is related to rescue reliability but is not by itself the determining factor.
+
+The strongest concentration of successful cases occurred at 3/4 coverage, but 2/4 coverage was also frequently successful. Because the [0,0] input produces zero pre-activation for newly added neurons initialized with zero bias, the meaningful variation is primarily which of the other XOR examples the new neurons activate on and how those patterns combine.
+
+This indicates that the structure of the activation pattern may matter more than raw coverage count.
+
+The next experiment should therefore compare the exact activation patterns of successful and failed rescue cases and determine whether particular feature patterns are consistently associated with successful recovery.
