@@ -176,6 +176,66 @@ A simple model can learn more than one parameter. Weight determines how strongly
 
 This is the first experiment in which the model behaves like a tiny neuron with a learned weight and bias.
 
+## Entry 004 — Gradient Descent in Practice
+
+**Date:** 2026-09-26
+
+### Experiment
+
+Tested repeated gradient descent updates using one training example:
+
+x = 2
+y = 5
+
+Initial parameters:
+
+w = 0.5
+b = 0
+
+Learning rate:
+
+0.001
+
+Training steps:
+
+20
+
+### Results
+
+Step 1:
+
+- Prediction: 1.0
+- Loss: 16.0
+- Weight: 0.516
+- Bias: 0.008
+
+Step 5:
+
+- Prediction: 1.15761596
+- Loss: 14.76391511084672
+
+Step 10:
+
+- Prediction: 1.3459310100654365
+- Loss: 13.3522201832014
+
+Step 20:
+
+- Prediction: 1.695325504657653
+- Loss: 10.920873520166197
+- Weight: 0.7913488998444306
+- Bias: 0.14567444992221532
+
+### Observation
+
+Repeated gradient descent caused the loss to decrease from 16.0 to 10.92 while the prediction moved from 1.0 toward the correct answer of 5.
+
+### Lesson
+
+Gradient descent repeatedly changes model parameters in the direction that reduces loss.
+
+A small learning rate produces smaller parameter updates, making the process slower but more controlled.
+
 ## Entry 005 — Learning Rate Experiment
 
 **Date:** 2026-09-26
