@@ -2449,3 +2449,54 @@ This suggests that the fixed training-example order may matter because the netwo
 
 The next experiment should test whether changing or shuffling the presentation order changes the probability of reaching a separable hidden representation.
 
+
+---
+
+## Experiment 030 — Training Order Sensitivity
+
+Date: 2026-09-27
+
+### Question
+Does the order in which XOR training examples are presented materially affect the seed-dependent training outcome?
+
+### Setup
+Used the same He-initialized 2-2-1 XOR network.
+
+Compared four deterministic presentation orders while keeping architecture, initialization, learning rate, and number of epochs unchanged:
+
+- fixed: [0,1,2,3]
+- reverse: [3,2,1,0]
+- odd-even: [1,3,0,2]
+- even-odd: [0,2,1,3]
+
+Ten seeds were tested for each order.
+
+A successful run was defined as final loss below 1e-6 with a nonzero hidden-space separation gap.
+
+### Findings
+
+Every tested order produced 3 successful runs out of 10.
+
+Final aggregate results:
+
+- fixed: 3/10 successful, mean loss 0.216863172405
+- reverse: 3/10 successful, mean loss 0.216864670238
+- odd-even: 3/10 successful, mean loss 0.216890863108
+- even-odd: 3/10 successful, mean loss 0.216861674573
+
+The reverse order changed the identity of one successful seed. Seed 1 failed under the fixed order but succeeded under the reverse order.
+
+Seeds 4 and 8 succeeded under every tested order, while most other seeds remained failures.
+
+The final mean separation gaps were also very similar across orders.
+
+### Conclusion
+
+Presentation order can alter individual training trajectories, but the tested orders did not materially change the overall probability of successful training in this 10-seed experiment.
+
+Therefore, the seed-dependent instability is unlikely to be explained primarily by the ordering of the four XOR samples.
+
+The next question is whether the instability comes from applying parameter updates after every individual example at all.
+
+Experiment 031 should compare online per-example updates against full-batch updates using the same initialization, learning rate, architecture, and training data.
+
