@@ -1688,3 +1688,110 @@ Experiment 019 complete.
 
 Investigate initialization strategies and how they affect gradient flow before moving to larger networks.
 
+
+
+## Entry 021 — Initialization Scale
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Tested how the scale of the initial weights affects training.
+
+The same automatically constructed XOR network was used for every run:
+
+2 inputs
+→ 2 ReLU hidden neurons
+→ 1 linear output neuron
+
+Training data:
+
+[0, 0] → 0
+[0, 1] → 1
+[1, 0] → 1
+[1, 1] → 0
+
+The random seed, learning rate, architecture, and training duration were held constant.
+
+Learning rate:
+
+0.05
+
+Training epochs:
+
+1000
+
+The initial weights produced by the network were multiplied by different scale values.
+
+### Results
+
+Scale 0.0:
+
+Loss ≈ 0.500000863377
+Success = False
+
+Scale 0.001:
+
+Loss ≈ 0.000000000000
+Success = True
+
+Scale 0.01:
+
+Loss ≈ 0.000000000000
+Success = True
+
+Scale 0.1:
+
+Loss ≈ 0.000000000000
+Success = True
+
+Scale 1.0:
+
+Loss ≈ 0.000000000000
+Success = True
+
+Scale 10.0:
+
+Loss ≈ 0.500000863377
+Success = False
+
+Scale 100.0:
+
+Loss ≈ 0.500000863377
+Success = False
+
+### Observation
+
+The initialization scale affected whether the same network successfully learned XOR.
+
+Zero initialization failed.
+
+Very small through moderate initialization scales successfully learned the task.
+
+Very large initialization scales failed under the same learning rate and training budget.
+
+### Lesson
+
+Initialization is not simply about making weights random.
+
+The magnitude of the starting parameters also matters.
+
+If all parameters begin at zero, neurons can remain identical and fail to learn different features.
+
+If parameters begin too large, the same learning rate can produce unsuitable updates and prevent successful training.
+
+### Important Understanding
+
+Initialization interacts with optimization.
+
+The starting values determine the initial activations and gradients, while the learning rate determines how far parameters move during each update.
+
+A useful initialization strategy therefore needs to consider both the network architecture and the optimization process.
+
+### Status
+
+Experiment 020 complete.
+
+### Next Direction
+
+Investigate how initialization can be chosen systematically instead of selecting a scale manually.
