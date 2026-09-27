@@ -2861,3 +2861,97 @@ This indicates that hidden-neuron death is likely associated with failed trainin
 The important distinction is between merely keeping a neuron numerically active and preserving a hidden representation that provides useful gradient information for separating the XOR classes.
 
 The next experiment should therefore examine the quality and direction of the hidden gradients before neuron death, rather than treating neuron survival alone as the intervention target.
+
+## Experiment 036 — Gradient Conflict and Support
+
+### Question
+
+Do opposing per-example hidden-layer gradients explain the seed-dependent failure observed in earlier experiments?
+
+### Setup
+
+Used the same training configuration as Experiments 033–035.
+
+- He initialization
+- 2-2-1 network
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 parameter updates
+- seeds 0–9
+- checkpoints: epochs 0, 1, 2, 5, 10, 20, 50, 100, and 4000
+
+For each checkpoint, the hidden-layer gradient was measured separately for each XOR training example.
+
+Pairwise cosine similarity was used to measure gradient direction:
+
+- positive cosine: aligned update directions
+- negative cosine: opposing update directions
+
+Because some ReLU examples produce zero hidden gradients, only nonzero gradient pairs were included in the cosine calculations.
+
+The number of valid pairs was also recorded as a measure of gradient support.
+
+### Results
+
+The final split remained:
+
+- successful seeds: 1, 2, 4, 8, 9
+- failed seeds: 0, 3, 5, 6, 7
+- success rate: 5/10
+
+Gradient conflict alone did not explain success or failure.
+
+Several successful seeds developed strongly negative mean cosine similarity:
+
+- seed 1 reached approximately -0.26 by epochs 20–100
+- seed 2 reached approximately -0.30 to -0.33
+- seed 4 reached approximately -0.18 to -0.29
+- seed 8 reached approximately -0.26 to -0.32
+- seed 9 reached approximately -0.25 to -0.30
+
+Therefore, successful learning can occur while individual examples push the hidden layer in substantially opposing directions.
+
+The number of examples contributing usable hidden gradients was more strongly associated with the eventual outcome.
+
+At epoch 5:
+
+- all successful seeds had 6 valid gradient pairs
+- seed 0 had 3
+- seeds 3, 5, and 7 had 1
+- seed 6 had 0
+
+At epoch 20:
+
+- all successful seeds had 6 valid gradient pairs
+- seed 0 had 1
+- seeds 3, 5, and 7 had 1
+- seed 6 had 0
+
+At epoch 50:
+
+- all successful seeds had 6 valid gradient pairs
+- seed 0 had 1
+- seed 3 had 1
+- seeds 5, 6, and 7 had 0
+
+At epoch 100:
+
+- all successful seeds had 6 valid gradient pairs
+- seed 0 had 0
+- seed 3 had 1
+- seeds 5, 6, and 7 had 0
+
+The successful trajectories therefore maintained broad hidden-gradient participation across the XOR dataset, while the failed trajectories rapidly became supported by only one or zero effective hidden-gradient examples.
+
+### Conclusion
+
+Per-example gradient conflict is not sufficient to explain Larry's seed dependence. Strongly opposing gradients occur in both successful and failed trajectories.
+
+The more consistent distinction is gradient support.
+
+Successful seeds preserve hidden gradients across many XOR examples during early training. Failed seeds rapidly lose that support, leaving the batch update determined by very few examples before eventually reaching a zero-gradient state.
+
+This refines the earlier neuron-survival hypothesis. The important property may not be whether a hidden neuron remains numerically active, but whether the hidden layer continues receiving useful gradient information from a sufficiently broad portion of the training set.
+
+The next experiment should test this activation/gradient-coverage hypothesis directly.
