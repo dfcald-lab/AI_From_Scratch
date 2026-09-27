@@ -430,3 +430,119 @@ With multiple inputs, the neuron can combine multiple signals before producing a
 ### Status
 
 Experiment 005 complete.
+
+## Entry 007 — Two-Neuron Layer
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Expanded from a single neuron to a layer containing two neurons.
+
+Both neurons received the same two inputs:
+
+x1
+x2
+
+Each neuron had its own two weights and bias.
+
+The layer was trained to learn:
+
+y1 = 2x1 + x2
+
+y2 = x1 + 3x2
+
+### Initial Parameters
+
+All weights started at:
+
+0.5
+
+All biases started at:
+
+0
+
+Learning rate:
+
+0.001
+
+Training epochs:
+
+2000
+
+### Result — Neuron 1
+
+Weight 1:
+
+1.9809329330954377
+
+Weight 2:
+
+0.9810192332833941
+
+Bias:
+
+0.07573069152144327
+
+Expected relationship:
+
+y1 = 2x1 + x2
+
+### Result — Neuron 2
+
+Weight 1:
+
+0.9721315321064297
+
+Weight 2:
+
+2.9711802993693683
+
+Bias:
+
+0.11283761404099299
+
+Expected relationship:
+
+y2 = x1 + 3x2
+
+### Unseen Test
+
+Test inputs:
+
+x1 = 4
+x2 = 2
+
+Expected output 1:
+
+10
+
+Predicted output 1:
+
+9.961500890469981
+
+Expected output 2:
+
+10
+
+Predicted output 2:
+
+9.943724341205447
+
+### Observation
+
+Two neurons can receive the same inputs while learning different relationships through separate weights and biases.
+
+### Lesson
+
+A layer allows multiple neurons to process the same information in different ways.
+
+Each neuron has its own parameters and produces its own output.
+
+### Next Direction
+
+Explore activation functions and the role they play in allowing neural networks to represent nonlinear relationships.
+
+### Status
+
+Experiment 006 complete.
