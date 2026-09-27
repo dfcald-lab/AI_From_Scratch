@@ -3022,3 +3022,82 @@ This strengthens the conclusion from Experiments 035 and 036: the problem is not
 The improvement for seed 7 shows that a gradient floor can alter the trajectory, but the resulting representation still did not become separable.
 
 The next experiment should investigate whether increasing hidden-layer capacity reduces the seed dependence by giving the optimizer more representational freedom.
+
+## Experiment 038 — Hidden Capacity Sweep
+
+### Question
+
+Does increasing hidden-layer capacity reduce the seed dependence observed with the 2-neuron hidden layer?
+
+### Setup
+
+Varied only the number of hidden ReLU neurons.
+
+- He initialization
+- XOR training data
+- one linear output neuron
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 parameter updates
+- seeds 0–9
+- hidden widths: 1, 2, 3, 4, and 6
+
+Success was defined as final loss < 1e-6.
+
+For width 2, hidden-space separation gap was also retained for comparison with earlier experiments.
+
+### Results
+
+The success rate increased substantially with hidden width:
+
+| Hidden width | Successful runs | Mean final loss |
+|---|---:|---:|
+| 1 | 0/10 | 0.416666666667 |
+| 2 | 5/10 | 0.166666666667 |
+| 3 | 6/10 | 0.133333333333 |
+| 4 | 7/10 | 0.083333333333 |
+| 6 | 9/10 | 0.025000000000 |
+
+Width 1 failed on every seed.
+
+The original 2-neuron configuration retained the 5/10 success rate observed in Experiments 033–037.
+
+Increasing the hidden width to 3 changed the successful seeds to:
+
+- 1, 2, 4, 6, 8, 9
+
+Width 4 succeeded on:
+
+- 1, 2, 4, 6, 7, 8, 9
+
+Width 6 succeeded on:
+
+- 0, 1, 2, 3, 4, 6, 7, 8, 9
+
+Only seed 5 failed at width 6, with final loss 0.25.
+
+The successful width-2 runs continued to produce the same hidden-space gaps observed previously:
+
+- seed 1: 0.644062744
+- seed 2: 0.572161784
+- seed 4: 0.475612787
+- seed 8: 0.529266449
+- seed 9: 0.500010441
+
+### Conclusion
+
+Hidden-layer capacity strongly affects the reliability of XOR learning under the current training setup.
+
+A single hidden ReLU neuron could not solve XOR in any of the tested seeds. Two neurons were sufficient to solve XOR, but only 5/10 seeds converged successfully.
+
+Increasing capacity progressively reduced seed dependence:
+
+- width 3: 6/10
+- width 4: 7/10
+- width 6: 9/10
+
+This indicates that the remaining failures are not explained solely by ReLU death or zero gradients. Additional hidden units provide more representational and optimization freedom, allowing more initializations to reach a useful solution.
+
+However, increasing width also increases the number of trainable parameters. Therefore, this experiment establishes a strong association between capacity and reliability, but does not yet separate increased representational capacity from the optimization effects of having more parameters.
+
+The next experiment should investigate whether the width improvement comes from additional representational degrees of freedom or simply from having more independent hidden units available during optimization.
