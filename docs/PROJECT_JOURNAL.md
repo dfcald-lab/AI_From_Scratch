@@ -3782,3 +3782,71 @@ However, these measurements do not establish a single deterministic threshold. S
 The results therefore identify early new-neuron participation as a useful correlate of successful rescue, but not yet a sufficient causal explanation.
 
 The next experiment should test whether giving newly added neurons nonzero output connections at injection changes the result by allowing them to receive hidden-layer gradients immediately, while keeping their hidden initialization fixed.
+
+## Experiment 047 — Nonzero Rescue Output Weights
+
+### Question
+
+Does initializing the newly added neurons with zero output-layer weights create a gradient bottleneck that reduces rescue success?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–046.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+Compared two initial output-weight conditions for the newly added neurons:
+
+- 0.00
+- 0.01
+
+The hidden-neuron initialization, original network trajectory, and all other training conditions were held fixed.
+
+Each condition therefore contained 80 seed/initialization combinations.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+With zero new output weights:
+
+- successful cases: 73/80
+- mean final loss: 0.021875000000
+- mean loss at injection: 0.421455397945
+
+With output weights initialized to 0.01:
+
+- successful cases: 73/80
+- mean final loss: 0.021875000000
+- mean loss at injection: 0.419786258131
+
+The success count was identical for every initialization offset.
+
+The 0.01 condition produced a slightly lower mean loss immediately after injection because the newly added neurons contributed a small nonzero output immediately, but this did not change final success rate or mean final loss.
+
+### Conclusion
+
+Initializing the newly added neurons with zero output-layer weights is not sufficient to explain the observed rescue failures.
+
+Changing their initial output weights from 0.00 to 0.01 produced exactly the same success rate:
+
+- 73/80 with zero output weights
+- 73/80 with 0.01 output weights
+
+The result indicates that the basic zero-output initialization is not the dominant bottleneck in the tested configuration.
+
+However, only a small positive value was tested. This experiment therefore does not rule out larger output-weight initialization effects.
+
+The stronger conclusion is that simply giving the newly added neurons a small immediate contribution does not materially change rescue reliability.
+
+The next experiment should test whether the amount and direction of the new output connections matter, using substantially larger positive and negative initial values while keeping the hidden initialization fixed.
