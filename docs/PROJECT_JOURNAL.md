@@ -2715,3 +2715,79 @@ This suggests that, for the current full-batch setup, increasing the learning ra
 
 The next question should therefore examine what distinguishes the permanently failed seeds from the successful seeds after learning-rate effects have been accounted for.
 
+
+## Experiment 034 — Early Trajectory Discriminator
+
+### Question
+
+Can the seeds that eventually solve XOR be distinguished from the permanently failed seeds early in training, after fixing the learning rate at a stable value?
+
+### Setup
+
+Used the corrected full-batch implementation from Experiment 031 and the learning rate selected from Experiment 033.
+
+- He initialization
+- 2-2-1 network
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 parameter updates
+- seeds 0–9
+- checkpoints: epochs 0, 1, 2, 5, 10, 20, 50, 100, and 4000
+
+At each checkpoint, measured:
+
+- loss
+- hidden-space separation gap
+- hidden activation pattern
+- mean hidden activation
+- mean absolute hidden gradient
+- zero-gradient fraction
+
+Success remained defined as final loss < 1e-6 with nonzero hidden-space separation.
+
+### Results
+
+The final split was:
+
+- successful seeds: 1, 2, 4, 8, 9
+- failed seeds: 0, 3, 5, 6, 7
+- success rate: 5/10
+
+At initialization, the successful seeds were not simply the seeds with an immediately separable hidden representation. Seeds 1, 2, 4, 8, and 9 all had zero separation at epoch 0, while only seed 6 had a small positive gap among the eventual failures.
+
+The clearest early discriminator was hidden-unit activity.
+
+By epoch 50:
+
+- successful seeds retained 6–7 active hidden-unit/example pairs
+- failed seeds retained only 1–2 active pairs
+
+By epoch 100:
+
+- successful seeds retained 5–7 active hidden-unit/example pairs
+- failed seeds retained only 1–2 active pairs
+
+The failed trajectories therefore progressively lost hidden-unit activity while their separation gap remained zero. Seeds 0 and 6 also demonstrated explicit loss of an initially useful geometric state: seed 0's gap fell from 0.3448 at initialization to zero by epoch 100, while seed 6's initial gap of 0.0724 fell to zero by epoch 5.
+
+The successful trajectories were different. Their hidden representations were not separable during the early checkpoints, but multiple hidden activations remained active while training continued. Their separation emerged later, reaching positive values only by the final checkpoint.
+
+At epoch 4000, the successful seeds had:
+
+- seed 1: gap 0.6441
+- seed 2: gap 0.5722
+- seed 4: gap 0.4756
+- seed 8: gap 0.5293
+- seed 9: gap 0.5000
+
+All five reached near-zero loss.
+
+### Conclusion
+
+The remaining seed dependence is strongly associated with early hidden-unit activity rather than initial hidden-space separability alone.
+
+Successful seeds preserved several active hidden responses through the early training trajectory, even while their hidden representations were still nonseparable. Failed seeds progressively reduced their active patterns to only 1–2 active hidden-unit/example pairs, after which their gradients weakened and the network converged to a loss of approximately 1/3 without developing a separable representation.
+
+This suggests that preserving a sufficiently rich hidden representation early in training may be a prerequisite for later geometric separation and successful XOR learning.
+
+The next experiment should isolate hidden-unit survival/activity as a causal variable rather than only measuring it as an outcome.
