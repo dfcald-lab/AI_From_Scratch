@@ -746,3 +746,65 @@ The size of the error alone does not determine the parameter update. The activat
 ### Status
 
 Experiment 009 complete.
+
+## Entry 011 — First Multi-Layer Network
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Built the first multi-layer neural network.
+
+Architecture:
+
+2 inputs → 2 ReLU hidden neurons → 1 output
+
+The network was trained to learn XOR:
+
+(0, 0) → 0
+(0, 1) → 1
+(1, 0) → 1
+(1, 1) → 0
+
+### Training
+
+Learning rate:
+
+0.05
+
+Epochs:
+
+1000
+
+### Result
+
+Final total loss:
+
+6.409494854920721e-31
+
+The final loss was effectively zero.
+
+Predictions:
+
+(0, 0) → 2.220446049250313e-16
+(0, 1) → 0.9999999999999996
+(1, 0) → 0.9999999999999996
+(1, 1) → 4.440892098500626e-16
+
+The values near zero are floating-point representations of values effectively equal to zero.
+
+### Observation
+
+The network successfully learned the XOR relationship using a hidden layer and ReLU activation.
+
+### Lesson
+
+A hidden layer combined with a nonlinear activation allows a neural network to represent relationships that a single linear neuron cannot.
+
+This experiment also connected the forward pass and backward pass into one multi-layer training process.
+
+The backward pass propagated gradients from the loss through the output neuron, through the ReLU activations, and into the hidden-layer parameters.
+
+### Status
+
+Experiment 010 complete.
