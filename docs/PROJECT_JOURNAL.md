@@ -1558,3 +1558,130 @@ Experiment 018 complete.
 
 Future experiments should investigate initialization more systematically rather than depending on a single seed.
 
+
+## Entry 020 — Initialization Test
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Tested the effect of random parameter initialization by training the same automatically constructed XOR network with ten different random seeds.
+
+Architecture:
+
+2 inputs
+→ 2 ReLU hidden neurons
+→ 1 linear output neuron
+
+Training data:
+
+[0, 0] → 0
+[0, 1] → 1
+[1, 0] → 1
+[1, 1] → 0
+
+Learning rate:
+
+0.05
+
+Training epochs:
+
+1000
+
+Seeds tested:
+
+0 through 9
+
+### Results
+
+Seed 0:
+
+Loss ≈ 0.333763992254
+Success = False
+
+Seed 1:
+
+Loss ≈ 0.000000000000
+Success = True
+
+Seed 2:
+
+Loss ≈ 0.333763992254
+Success = False
+
+Seed 3:
+
+Loss ≈ 0.500000863377
+Success = False
+
+Seed 4:
+
+Loss ≈ 0.500000863377
+Success = False
+
+Seed 5:
+
+Loss ≈ 0.000000000053
+Success = True
+
+Seed 6:
+
+Loss ≈ 0.333763992254
+Success = False
+
+Seed 7:
+
+Loss ≈ 0.333487085225
+Success = False
+
+Seed 8:
+
+Loss ≈ 0.333472106898
+Success = False
+
+Seed 9:
+
+Loss ≈ 0.333472106898
+Success = False
+
+The experiment treated a total loss below 1e-8 as successful.
+
+### Additional Investigation
+
+Seed 5 produced:
+
+[0, 0] → approximately 0.00000887
+[0, 1] → approximately 0.99999674
+[1, 0] → approximately 0.99999597
+[1, 1] → approximately 0.00000017
+
+Its total loss was approximately 5.3e-11.
+
+### Observation
+
+The same network architecture and training procedure produced different results depending only on the initial random parameters.
+
+Two of the ten tested seeds reached the experiment's success threshold within 1000 epochs.
+
+Several other seeds became stuck at nonzero loss values.
+
+### Lesson
+
+Random initialization is an important part of neural-network training.
+
+The architecture alone does not determine the training result. The starting parameter values can affect whether optimization reaches a useful solution within a given number of training steps.
+
+### Important Understanding
+
+A random seed is useful during development because it makes an experiment reproducible.
+
+Testing multiple seeds is also useful because a single successful run does not show how robust the training process is.
+
+### Status
+
+Experiment 019 complete.
+
+### Next Direction
+
+Investigate initialization strategies and how they affect gradient flow before moving to larger networks.
+
