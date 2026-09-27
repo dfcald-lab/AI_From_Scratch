@@ -2080,3 +2080,61 @@ The experiments now show that seed-dependent failure has at least two mechanisms
 2. Neurons can remain active but converge to a hidden representation that cannot support the required XOR separation.
 
 Experiment 026 should isolate the geometry of the hidden representation and determine what property distinguishes successful representations from failed ones.
+
+---
+
+## Experiment 026 — Representation Geometry
+
+Date: 2026-09-27
+
+### Question
+Does the geometric separability of the hidden representation distinguish successful and failed XOR training?
+
+### Setup
+Used the same He-initialized 2-2-1 network from Experiments 024 and 025.
+
+The four XOR inputs were mapped into the two-dimensional hidden ReLU representation.
+
+The positive class consisted of:
+- [0,1]
+- [1,0]
+
+The negative class consisted of:
+- [0,0]
+- [1,1]
+
+Measured the distance between the two class line segments in hidden space. A nonzero distance indicates that the two classes are linearly separable.
+
+### Findings
+
+At epoch 1000, every successful seed had a nonzero separation gap:
+
+- Seed 2: gap 0.565872044
+- Seed 4: gap 0.477392712
+- Seed 8: gap 0.527839013
+
+Every failed seed had a gap of 0.
+
+The timing of separability was also important.
+
+Seed 0 began with a separable representation (gap 0.344778929) but lost separability by epoch 100 and eventually converged to loss approximately 0.33347.
+
+Seed 6 also began separable (gap 0.072356197) but lost separability by epoch 1 and eventually converged to loss approximately 0.33349.
+
+Conversely, successful seeds could begin nonseparable and develop separability during training.
+
+Seed 2 became separable between epochs 100 and 500.
+
+Seed 4 became separable between epochs 100 and 500.
+
+Seed 8 became separable between epochs 10 and 100.
+
+Seeds 1 and 9 remained nonseparable and converged to loss plateaus near 0.25.
+
+### Conclusion
+Final hidden-space separability strongly corresponds with successful XOR training in this experiment.
+
+Initialization determines the starting geometry, but training dynamics can either create the required separation or destroy it.
+
+The next question is when the separation transition occurs and what changes immediately before the network becomes separable or loses separability.
+
