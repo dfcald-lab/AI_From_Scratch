@@ -29,3 +29,25 @@ It needs to be understandable.
 ### Status
 
 Phase 0 — Foundation
+
+## Entry 002 — Development Environment Established
+
+**Date:** 2026-09-26
+
+### Environment
+
+
+### Decision
+
+Begin the first learning experiment using Python's standard library only.
+
+No machine-learning framework will be used for Experiment 001.
+
+### Reason
+
+We want to see the learning process directly instead of hiding it behind a library.
+
+### Status
+
+Phase 0 — Foundation  
+Preparing for Phase 1 — First Learning System
