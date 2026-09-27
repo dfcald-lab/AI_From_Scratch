@@ -3247,3 +3247,95 @@ The result also strengthens the capacity hypothesis from Experiment 038. Extra n
 The experiment does not yet establish how many additional neurons are necessary, nor whether the rescue is caused by the added representational capacity itself or by having multiple newly initialized hidden features available.
 
 The next experiment should determine the minimum amount of additional capacity required to rescue the failed width-2 trajectories.
+
+## Experiment 041 — Minimum Rescue Capacity
+
+### Question
+
+How many additional hidden neurons are required to rescue the width-2 trajectories that fail under the original configuration?
+
+### Setup
+
+Started every run with the same width-2 hidden ReLU network used in Experiments 033–040.
+
+- He initialization
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- seeds 0–9
+- capacity injection point: epoch 100
+- additional neurons tested: 0, 1, 2, 3, and 4
+
+At epoch 100, new hidden neurons were added without modifying the original two hidden neurons.
+
+New neurons received fresh He initialization and zero bias.
+
+Their output-layer weights were initialized to zero, so the network's predictions were unchanged immediately at the injection point.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+The width-2 control reproduced the previous result:
+
+- successful seeds: 1, 2, 4, 8, 9
+- success rate: 5/10
+- mean final loss: 0.166666666667
+
+Adding one hidden neuron at epoch 100 increased success to:
+
+- successful seeds: 1, 2, 3, 4, 6, 8, 9
+- success rate: 7/10
+- mean final loss: 0.091666666667
+
+Adding two hidden neurons increased success to:
+
+- successful seeds: 0, 1, 2, 3, 4, 5, 6, 8, 9
+- success rate: 9/10
+- mean final loss: 0.025000000000
+
+Adding three hidden neurons produced:
+
+- successful seeds: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+- success rate: 10/10
+- mean final loss: 0.000000000000
+
+Adding four hidden neurons also produced:
+
+- successful seeds: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+- success rate: 10/10
+- mean final loss: 0.000000000000
+
+The previously difficult seed 7 remained the only failure with two added neurons, reaching loss 0.25. Adding a third neuron rescued it.
+
+### Results Summary
+
+| Additional neurons at epoch 100 | Successful runs | Mean final loss |
+|---|---:|---:|
+| 0 | 5/10 | 0.166666666667 |
+| 1 | 7/10 | 0.091666666667 |
+| 2 | 9/10 | 0.025000000000 |
+| 3 | 10/10 | 0.000000000000 |
+| 4 | 10/10 | 0.000000000000 |
+
+### Conclusion
+
+The number of additional hidden neurons strongly affects the ability to rescue a failing width-2 trajectory.
+
+At the fixed epoch-100 injection point:
+
+- one additional neuron rescued two additional seeds
+- two additional neurons rescued four additional seeds
+- three additional neurons rescued all remaining failures
+- a fourth additional neuron provided no further increase in success rate
+
+This shows that the failed width-2 trajectories retain recoverable information even after 100 updates. The optimization does not require restarting from a new initialization; additional hidden capacity can supply enough new degrees of freedom for the remaining seeds to reach zero loss.
+
+The result also provides a concrete capacity threshold for this specific experiment: adding three hidden neurons at epoch 100 was sufficient to achieve 10/10 success across seeds 0–9.
+
+This threshold should not be interpreted as a universal requirement. It depends on the XOR task, network architecture, learning rate, initialization procedure, injection time, and deterministic initialization of the newly added neurons.
+
+The next experiment should determine whether the rescue threshold depends on when the capacity is added, and whether the same small amount of added capacity can rescue trajectories much later in training.
