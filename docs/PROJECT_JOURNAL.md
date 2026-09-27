@@ -3101,3 +3101,75 @@ This indicates that the remaining failures are not explained solely by ReLU deat
 However, increasing width also increases the number of trainable parameters. Therefore, this experiment establishes a strong association between capacity and reliability, but does not yet separate increased representational capacity from the optimization effects of having more parameters.
 
 The next experiment should investigate whether the width improvement comes from additional representational degrees of freedom or simply from having more independent hidden units available during optimization.
+
+## Experiment 039 — Effective Capacity by Pruning
+
+### Question
+
+Do successful width-6 networks actually require all six hidden neurons in their final learned representation?
+
+### Setup
+
+Used the width-6 configuration from Experiment 038.
+
+- He initialization
+- 6 hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 parameter updates
+- seeds 0–9
+
+After training, each successful network was tested with every possible subset of its six hidden neurons.
+
+Pruning was performed by setting the output weight connected to a hidden neuron to zero while leaving the trained hidden-layer parameters unchanged.
+
+For each seed, the smallest subset producing loss < 1e-6 was recorded.
+
+This is a post-training compressibility test. It does not measure whether the narrower network could have reached the same solution if trained from scratch.
+
+### Results
+
+The width-6 network again succeeded on:
+
+- 9/10 seeds
+
+Seed 5 was the only failure.
+
+Among the nine successful runs, the minimum number of contributing hidden neurons required after training was:
+
+- seed 0: 3
+- seed 1: 3
+- seed 2: 3
+- seed 3: 3
+- seed 4: 5
+- seed 6: 4
+- seed 7: 4
+- seed 8: 5
+- seed 9: 5
+
+Distribution:
+
+- 3 neurons: 4 runs
+- 4 neurons: 2 runs
+- 5 neurons: 3 runs
+- 6 neurons: 0 runs
+
+Mean minimum contributing neurons: 3.89.
+
+Therefore, none of the successful width-6 solutions required all six hidden neurons after training.
+
+### Conclusion
+
+The capacity improvement observed in Experiment 038 does not mean that six hidden neurons are required to represent the final XOR solutions.
+
+Successful width-6 models could be compressed after training to between 3 and 5 contributing hidden neurons while retaining near-zero loss.
+
+This suggests that additional hidden capacity primarily provides extra degrees of freedom during optimization rather than being fully required by the final solution.
+
+The distinction is important: width 6 may make it easier for gradient descent to discover a useful representation, even when the resulting solution can later be represented with fewer neurons.
+
+The post-training pruning result does not establish that a width-3 or width-4 network trained from scratch would reliably reproduce those solutions. Experiment 038 already showed that narrower networks have lower success rates.
+
+The next experiment should test whether the extra capacity helps specifically by allowing multiple candidate hidden features to develop before some become unnecessary.
