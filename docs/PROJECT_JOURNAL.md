@@ -3850,3 +3850,76 @@ However, only a small positive value was tested. This experiment therefore does 
 The stronger conclusion is that simply giving the newly added neurons a small immediate contribution does not materially change rescue reliability.
 
 The next experiment should test whether the amount and direction of the new output connections matter, using substantially larger positive and negative initial values while keeping the hidden initialization fixed.
+
+## Experiment 048 — Signed Rescue Output Initialization
+
+### Question
+
+Does the magnitude and sign of the newly added neurons' initial output weights affect rescue success?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–047.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+The initial output weights of the two newly added neurons were set to the same tested value:
+
+- -0.50
+- -0.10
+- 0.00
+- +0.10
+- +0.50
+
+Each condition contained 80 seed/initialization combinations.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+| Initial output weight | Successful cases | Mean final loss | Mean loss at injection |
+|---|---:|---:|---:|
+| -0.50 | 55/80 | 0.087500000000 | 1.090635673320 |
+| -0.10 | 69/80 | 0.035416666667 | 0.463413290714 |
+| 0.00 | 73/80 | 0.021875000000 | 0.421455397945 |
+| +0.10 | 73/80 | 0.021875000000 | 0.425436586328 |
+| +0.50 | 72/80 | 0.026041666667 | 0.900752151391 |
+
+The zero-output condition reproduced the Experiment 047 result of 73/80.
+
+The +0.10 condition also produced 73/80.
+
+The +0.50 condition produced 72/80, a small decrease.
+
+Negative initialization was more disruptive:
+
+- -0.10 produced 69/80
+- -0.50 produced 55/80
+
+The -0.50 condition also produced a substantially larger mean loss immediately after injection.
+
+### Conclusion
+
+The initial output connection of newly added neurons can affect rescue reliability, but the effect depends strongly on magnitude and sign.
+
+A small positive output weight (+0.10) produced the same 73/80 success rate as zero initialization.
+
+A larger positive value (+0.50) produced only a small change, decreasing success from 73/80 to 72/80.
+
+Negative output weights were substantially more disruptive. At -0.50, success fell to 55/80 and the mean loss at injection increased considerably. At -0.10, success fell to 69/80.
+
+This demonstrates that large signed output initialization changes the rescue trajectory materially. However, the experiment does not isolate the hidden-gradient mechanism by itself, because changing the output weights also changes the network's output and therefore the error signal at the injection point.
+
+The main result is that the previously observed rescue behavior is robust to zero versus small positive output initialization, but not to sufficiently large signed initialization.
+
+The next experiment should control the magnitude of the initial output contribution more carefully and determine whether the effect is caused by the initial prediction shift or by the resulting hidden-gradient magnitude.
