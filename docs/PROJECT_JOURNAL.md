@@ -2319,3 +2319,133 @@ The deeper variable is whether training dynamics move the hidden representation 
 
 Next question: determine whether the gradient direction itself predicts whether the hidden representation will become more separable or less separable.
 
+
+---
+
+## Experiment 029 — Gradient Geometry
+
+Date: 2026-09-27
+
+### Question
+Which individual training examples move the hidden representation toward or away from linear separability?
+
+### Setup
+Used the same He-initialized 2-2-1 XOR network.
+
+Focused on the informative transition seeds from Experiment 027:
+- Seed 0
+- Seed 2
+- Seed 4
+- Seed 6
+- Seed 8
+
+For the epochs surrounding each transition, each XOR training example was examined separately.
+
+For every example, recorded:
+- hidden-space separation gap before the update
+- hidden-space separation gap after the update
+- change in separation gap
+- hidden-layer gradients for each neuron
+- output-layer gradients
+- hidden representation before and after the update
+
+Training examples were processed in the existing order:
+[0,0], [0,1], [1,0], [1,1].
+
+### Findings
+
+The four training examples exerted different and sometimes opposing effects on hidden-space geometry.
+
+#### Seed 0
+
+The representation was separable immediately before the failure.
+
+At epoch 27, the [1,0] example produced the critical update:
+
+- gap before: 0.011260454
+- gap after: 0.000000000
+- delta gap: -0.011260454
+
+Neuron 0 changed its [1,0] hidden activation from approximately 0.011262 to 0.000000.
+
+Its gradient then became exactly zero, leaving the neuron unable to recover that input.
+
+#### Seed 6
+
+The representation started separable.
+
+At epoch 1, the [0,1] example produced:
+
+- gap before: 0.072356197
+- gap after: 0.000000000
+- delta gap: -0.072356197
+
+Neuron 1 changed its [0,1] activation from approximately 0.073127 to 0.000000.
+
+Its gradient became exactly zero immediately afterward.
+
+#### Seed 2
+
+Near epoch 131, the [0,1] example created the first useful separation:
+
+- gap before: 0
+- gap after: 0.009122485
+
+The following [1,0] and [1,1] examples produced competing changes, including negative delta-gap updates, but the representation remained separable.
+
+The important point is that useful separation could be created while both hidden neurons remained trainable.
+
+#### Seed 4
+
+Near the transition, the [1,0] example was the update that created separation.
+
+At epoch 145, [1,0] produced:
+
+- gap before: 0
+- gap after: 0.001440382
+
+The subsequent [1,1] update removed that small gap.
+
+At epoch 146, the [1,0] update produced a larger gap:
+
+- gap before: 0
+- gap after: 0.005315076
+
+The [1,1] update again reduced the gap, but this time it remained positive:
+
+- gap after [1,1]: 0.002305559
+
+The network therefore crossed into the separable regime because the positive contribution from [1,0] exceeded the opposing update from [1,1].
+
+#### Seed 8
+
+Near epoch 79, the [1,0] example created a temporary separable representation:
+
+- gap after [1,0]: 0.004898453
+
+The following [1,1] update destroyed that gap:
+
+- gap after [1,1]: 0
+
+At epoch 80, the [1,0] update created a much larger gap:
+
+- gap after [1,0]: 0.020289951
+
+The following [1,1] update reduced it to:
+
+- gap after [1,1]: 0.004042234
+
+The representation therefore remained separable.
+
+### Conclusion
+
+Individual training examples can push the hidden representation in opposing geometric directions.
+
+In the failed transitions for seeds 0 and 6, a single update moved a critical hidden activation across the ReLU boundary and permanently removed its gradient.
+
+In successful transitions, particular examples created positive separation, while other examples sometimes reduced it without destroying it.
+
+This suggests that the fixed training-example order may matter because the network parameters change after every example.
+
+The next experiment should test whether changing or shuffling the presentation order changes the probability of reaching a separable hidden representation.
+
