@@ -1323,3 +1323,126 @@ This experiment demonstrates that mechanism with the project's own code.
 ### Status
 
 Experiment 016 complete.
+
+## Entry 018 — Reusable Network
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Created a reusable Network class to coordinate multiple Layer objects.
+
+The Network now handles:
+
+- forward propagation through all layers
+- backward propagation in reverse layer order
+- parameter updates across all layers
+
+The goal was to remove the need for each experiment to manually coordinate individual layers.
+
+### Architecture
+
+2 inputs
+→ 2 ReLU hidden neurons
+→ 1 linear output neuron
+
+### Training Data
+
+[0, 0] → 0
+[0, 1] → 1
+[1, 0] → 1
+[1, 1] → 0
+
+### Training
+
+Learning rate:
+
+0.05
+
+Epochs:
+
+1000
+
+The training loop now uses:
+
+network.forward()
+→ loss
+→ network.backward()
+→ network.update()
+
+### Results
+
+Epoch 1:
+
+Total loss ≈ 0.164122570751
+
+Epoch 10:
+
+Total loss ≈ 0.035717989313
+
+Epoch 100:
+
+Total loss ≈ 0.000920521315
+
+Epoch 500:
+
+Total loss ≈ 0.000000000041
+
+Epoch 1000:
+
+Total loss ≈ 0.000000000000
+
+### Final XOR Results
+
+Input [0, 0]:
+
+Expected = 0.0
+Predicted ≈ 0.000000000166
+
+Input [0, 1]:
+
+Expected = 1.0
+Predicted ≈ 0.999999999923
+
+Input [1, 0]:
+
+Expected = 1.0
+Predicted ≈ 0.999999999903
+
+Input [1, 1]:
+
+Expected = 0.0
+Predicted ≈ 0.000000000001
+
+### Observation
+
+The reusable Network produced the same results as the previous multi-layer experiment.
+
+The main change was architectural: the Network now coordinates the layers and hides the details of how many layers exist.
+
+### Lesson
+
+A neural network can be represented as a reusable sequence of layers.
+
+Forward propagation moves information from the input toward the output.
+
+Backward propagation moves gradients from the output toward the input.
+
+The Network class provides the structure that connects those operations.
+
+### Important Understanding
+
+The network itself does not need to know the internal math of each neuron.
+
+It coordinates the layers:
+
+input
+→ layer
+→ layer
+→ output
+
+and then reverses that path during backpropagation.
+
+### Status
+
+Experiment 017 complete.
