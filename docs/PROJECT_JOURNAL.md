@@ -1092,3 +1092,114 @@ Replace the manually named weights and biases in this experiment with the reusab
 ### Status
 
 Experiment 014 complete.
+
+## Entry 016 — Trainable Reusable Layer
+
+**Date:** 2026-09-27
+
+### Experiment
+
+Extended the reusable Neuron and Layer components so they can participate in training.
+
+The Neuron now stores:
+
+- inputs from the forward pass
+- raw output
+- weight gradients
+- bias gradient
+
+The Neuron can now perform:
+
+- forward pass
+- backward pass
+- parameter update
+
+The Layer can now:
+
+- forward inputs through all neurons
+- propagate gradients backward through all neurons
+- update all neuron parameters
+
+### Test
+
+Architecture:
+
+2 inputs → 2 trainable neurons
+
+Input:
+
+[5.0, 2.0]
+
+Target:
+
+[10.0, 20.0]
+
+Initial weights:
+
+[
+[2.0, 1.0],
+[3.0, 4.0]
+]
+
+Initial biases:
+
+[1.0, -2.0]
+
+Learning rate:
+
+0.01
+
+Training steps:
+
+100
+
+### Result
+
+Initial output:
+
+[13.0, 21.0]
+
+Initial loss:
+
+5.0
+
+At step 10:
+
+- Loss: approximately 0.0040
+- Output: approximately [10.0847, 20.0282]
+
+At step 20:
+
+- Output: approximately [10.0024, 20.0008]
+
+By step 50, the output was effectively:
+
+[10.0, 20.0]
+
+### Observation
+
+The reusable Layer produced the same learning behavior as the previous manually written training loop.
+
+The difference is that the training process is now handled by reusable Neuron and Layer objects instead of manually naming every parameter.
+
+### Lesson
+
+Reusable neural-network components can contain both forward computation and the information required for backpropagation and parameter updates.
+
+This is a major step toward building the network as a collection of reusable components rather than a collection of one-off experiments.
+
+### Important Understanding
+
+The Layer does not need to know the individual meaning of every weight.
+
+It asks each Neuron to:
+
+1. process its inputs,
+2. calculate its gradients,
+3. update its own parameters.
+
+The Layer coordinates those operations across the neurons.
+
+### Status
+
+Experiment 015 complete.
