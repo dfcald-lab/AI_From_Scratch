@@ -3923,3 +3923,77 @@ This demonstrates that large signed output initialization changes the rescue tra
 The main result is that the previously observed rescue behavior is robust to zero versus small positive output initialization, but not to sufficiently large signed initialization.
 
 The next experiment should control the magnitude of the initial output contribution more carefully and determine whether the effect is caused by the initial prediction shift or by the resulting hidden-gradient magnitude.
+
+## Experiment 049 — Balanced Rescue Output Weights
+
+### Question
+
+Does the relationship between the two newly added output weights matter when their absolute magnitude is fixed at 0.10?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–048.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+Compared four output-weight configurations for the two newly added neurons:
+
+- (0.00, 0.00)
+- (+0.10, +0.10)
+- (+0.10, -0.10)
+- (-0.10, -0.10)
+
+Each condition contained 80 seed/initialization combinations.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+| New output weights | Successful cases | Mean final loss | Mean loss at injection |
+|---|---:|---:|---:|
+| (0.00, 0.00) | 73/80 | 0.021875000000 | 0.421455397945 |
+| (+0.10, +0.10) | 73/80 | 0.021875000000 | 0.425436586328 |
+| (+0.10, -0.10) | 73/80 | 0.021875000000 | 0.439315532054 |
+| (-0.10, -0.10) | 69/80 | 0.035416666667 | 0.463413290714 |
+
+Zero, both-positive, and balanced-signed output weights all produced exactly the same success rate:
+
+- 73/80
+
+The balanced signed condition therefore did not improve rescue reliability despite giving the two new neurons opposite output directions.
+
+Both-negative initialization reduced success to:
+
+- 69/80
+
+It also produced a higher mean loss immediately after injection.
+
+### Conclusion
+
+At an absolute magnitude of 0.10 per new output connection, the relative sign of the two new connections does not materially affect rescue when one connection is positive and the other is negative.
+
+The three conditions:
+
+- (0.00, 0.00)
+- (+0.10, +0.10)
+- (+0.10, -0.10)
+
+all produced 73/80 successful rescues.
+
+The both-negative condition performed somewhat worse at 69/80.
+
+This reinforces the result from Experiment 048 that sufficiently negative output initialization can disrupt the rescue trajectory, while small positive or balanced signed connections are largely equivalent to zero initialization in this setup.
+
+The result also weakens the hypothesis that rescue depends simply on introducing a particular sign pattern into the output layer.
+
+The next experiment should return to the hidden representation and ask whether the new neurons' learned contributions, rather than their initial output-weight signs, predict successful rescue.
