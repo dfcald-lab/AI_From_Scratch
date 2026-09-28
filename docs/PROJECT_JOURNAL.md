@@ -4135,3 +4135,82 @@ Therefore, the important property is likely not simple neuron survival or activa
 This provides a stronger characterization of the rescue mechanism but remains observational. The correlation between contribution growth and successful learning does not establish whether large contributions cause success or emerge because the trajectory is already moving toward a solution.
 
 The next experiment should manipulate the contribution of newly added neurons directly and test whether forcing or limiting their output influence changes rescue probability.
+
+## Experiment 051 — Rescue Contribution Cap
+
+### Question
+
+Does limiting the output contribution of newly added hidden neurons reduce their ability to rescue a failing width-2 trajectory?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–050.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- zero initial output weights for the new neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+The experiment tested maximum absolute output-weight caps on the two newly added neurons:
+
+- 0.02
+- 0.05
+- 0.10
+- 0.20
+- uncapped control
+
+After every training update following injection, the new output weights were clamped to the selected maximum absolute magnitude.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+| Output-weight cap | Successful cases | Mean final loss |
+|---|---:|---:|
+| 0.02 | 40/80 | 0.157221639967 |
+| 0.05 | 40/80 | 0.130584835274 |
+| 0.10 | 38/80 | 0.087053968266 |
+| 0.20 | 34/80 | 0.034134855135 |
+| uncapped | 73/80 | 0.021875000000 |
+
+The uncapped result reproduced the previous 73/80 rescue rate.
+
+The strongest cap, 0.02, reduced rescue success to exactly 40/80.
+
+The 0.05 cap also produced 40/80 success.
+
+The 0.10 cap produced 38/80.
+
+The 0.20 cap produced 34/80.
+
+Thus, imposing a contribution limit substantially reduced the ability of the newly added neurons to rescue failed trajectories.
+
+Interestingly, increasing the cap from 0.02 to 0.20 did not produce a monotonic increase in success rate in this experiment. The uncapped condition was substantially better than every capped condition.
+
+### Conclusion
+
+The ability of newly added hidden neurons to grow substantial output connections is important for successful rescue.
+
+When their output weights were capped after every update, rescue success fell sharply compared with the uncapped condition:
+
+- uncapped: 73/80
+- cap 0.20: 34/80
+- cap 0.10: 38/80
+- cap 0.05: 40/80
+- cap 0.02: 40/80
+
+This provides stronger causal evidence than the observational result in Experiment 050. Limiting the new neurons' output influence changes the final success rate substantially.
+
+The result does not imply that larger output weights are always better. The non-monotonic ordering among the capped conditions shows that the relationship is more complicated than a simple magnitude threshold.
+
+A likely interpretation is that successful rescue requires the new neurons to develop sufficiently strong task-relevant contributions during optimization. The uncapped model allows those contributions to grow as needed, while the capped models constrain that adaptation.
+
+The next experiment should identify whether the important quantity is absolute output-weight magnitude itself or the actual task-relevant contribution produced by the hidden activations and output weights together.
