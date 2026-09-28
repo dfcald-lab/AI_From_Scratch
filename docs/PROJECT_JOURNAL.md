@@ -4781,3 +4781,73 @@ The result also explains why a single strongly task-aligned feature can still fa
 However, this experiment is observational. It shows a strong association between feature complementarity and successful rescue but does not establish that complementarity itself causes success.
 
 The next experiment should intervene on the initial relationship between the two new hidden features and test whether deliberately complementary initialization improves rescue reliability.
+
+## Experiment 058 — Complementary Initialization
+
+### Question
+
+Does deliberately making the two newly added hidden-weight vectors orthogonal improve rescue reliability by encouraging complementary features?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–057.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- zero initial output weights for the new neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+Two initialization conditions were compared:
+
+1. Standard independent He initialization for the two new hidden neurons.
+2. Orthogonal initialization in which the two new hidden-weight vectors were constructed to be perpendicular while preserving their individual weight norms.
+
+The new output weights were zero in both conditions.
+
+Each condition contained 80 seed/initialization combinations.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+| Initialization | Successful cases | Mean final loss |
+|---|---:|---:|
+| Standard | 73/80 | 0.021875000000 |
+| Orthogonal hidden weights | 68/80 | 0.040625001049 |
+
+The standard condition reproduced the previous 73/80 rescue rate.
+
+The orthogonal hidden-weight condition produced only 68/80 successful rescues.
+
+The orthogonal construction therefore did not improve reliability and instead reduced the observed success rate by 5 cases out of 80.
+
+The measured activation-vector statistics immediately after injection were:
+
+| Initialization | Mean activation-vector cosine | Mean independence | Mean determinant |
+|---|---:|---:|---:|
+| Standard | 0.206150 | 0.879430 | 0.108234 |
+| Orthogonal hidden weights | 0.211525 | 0.884595 | 0.085659 |
+
+Although the hidden weight vectors were exactly orthogonal in the intervention condition, their activation vectors were not. The activation representation depends on the input data, ReLU thresholding, and zero bias, so orthogonal parameter vectors do not imply orthogonal or complementary feature responses on the XOR examples.
+
+### Conclusion
+
+Forcing the two newly added hidden-weight vectors to be orthogonal did not improve rescue reliability.
+
+The standard initialization succeeded on 73/80 cases, while the orthogonal initialization succeeded on 68/80.
+
+This is an important distinction between parameter-space geometry and feature-space geometry. Orthogonal hidden-weight vectors do not guarantee useful complementary responses to the actual training data.
+
+The experiment therefore does not support the hypothesis that simple weight-vector orthogonality is sufficient to create better rescue features.
+
+The results from Experiment 057 remain more informative: successful rescue was associated with complementary activation behavior on the XOR examples, not merely geometric separation of the underlying weight vectors.
+
+The next experiment should therefore construct complementarity in the actual activation patterns on the XOR inputs rather than imposing orthogonality on the raw hidden-weight vectors.
