@@ -4214,3 +4214,90 @@ The result does not imply that larger output weights are always better. The non-
 A likely interpretation is that successful rescue requires the new neurons to develop sufficiently strong task-relevant contributions during optimization. The uncapped model allows those contributions to grow as needed, while the capped models constrain that adaptation.
 
 The next experiment should identify whether the important quantity is absolute output-weight magnitude itself or the actual task-relevant contribution produced by the hidden activations and output weights together.
+
+## Experiment 052 — Task Contribution Cap
+
+### Question
+
+Is the actual task contribution of newly added hidden neurons important for successful rescue, independent of output-weight magnitude alone?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–051.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- zero initial output weights for the new neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+For each newly added neuron, its contribution across the four XOR examples was defined as:
+
+output weight × hidden activation
+
+The contribution norm was calculated across the four examples.
+
+After each training update, the output weight of each new neuron was rescaled when necessary so that its contribution norm did not exceed the selected cap.
+
+Tested contribution caps:
+
+- 0.10
+- 0.25
+- 0.50
+- 1.00
+- uncapped control
+
+Each condition contained 80 seed/initialization combinations.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+| Contribution cap | Successful cases | Mean final loss |
+|---|---:|---:|
+| 0.10 | 38/80 | 0.150876694746 |
+| 0.25 | 35/80 | 0.116419062522 |
+| 0.50 | 32/80 | 0.069342987948 |
+| 1.00 | 50/80 | 0.029742007557 |
+| uncapped | 73/80 | 0.021875000000 |
+
+The uncapped condition reproduced the previous 73/80 rescue rate.
+
+Every contribution cap substantially reduced the success rate relative to the uncapped condition.
+
+The strongest restriction, 0.10, produced 38/80 successful cases.
+
+The 0.25 and 0.50 conditions produced 35/80 and 32/80 respectively.
+
+Allowing a contribution norm up to 1.00 improved success to 50/80 but remained substantially below the uncapped result.
+
+The capped conditions therefore demonstrate that restricting the effective output contribution of the new neurons can prevent otherwise successful rescue trajectories.
+
+### Conclusion
+
+The actual contribution made by newly added hidden neurons is important to successful rescue.
+
+Limiting contribution magnitude after each update substantially reduced the number of successful runs compared with the uncapped condition:
+
+- uncapped: 73/80
+- cap 1.00: 50/80
+- cap 0.50: 32/80
+- cap 0.25: 35/80
+- cap 0.10: 38/80
+
+The relationship was not monotonic across the capped values. The 0.50 condition had the lowest success rate among the tested caps, while 0.10 and 0.25 produced slightly higher success rates. This indicates that the rescue process is not governed by a simple minimum contribution threshold.
+
+The central result is that constraining the new neurons' effective influence on the output can prevent successful learning, providing causal evidence that sufficient learned contribution is part of the rescue mechanism.
+
+This complements Experiment 051, where limiting output-weight magnitude also reduced rescue success. The present experiment shows that the relevant quantity is not only the raw output weight; the interaction between output weight and hidden activation also matters.
+
+However, because the intervention is implemented by rescaling output weights, the experiment does not completely isolate contribution magnitude from changes to the gradient dynamics caused by that rescaling.
+
+The next experiment should examine whether deliberately encouraging larger contributions early after injection improves rescue, rather than only testing what happens when contribution is restricted.
