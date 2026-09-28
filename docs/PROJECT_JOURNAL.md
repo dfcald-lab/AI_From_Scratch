@@ -4851,3 +4851,94 @@ The experiment therefore does not support the hypothesis that simple weight-vect
 The results from Experiment 057 remain more informative: successful rescue was associated with complementary activation behavior on the XOR examples, not merely geometric separation of the underlying weight vectors.
 
 The next experiment should therefore construct complementarity in the actual activation patterns on the XOR inputs rather than imposing orthogonality on the raw hidden-weight vectors.
+
+## Experiment 059 — Input-Space Complementarity
+
+### Question
+
+Does deliberately constructing complementary hidden features in the actual XOR input space improve rescue reliability?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–058.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- zero initial output weights for the new neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+Two initialization conditions were compared:
+
+1. Standard independent He initialization for the two new hidden neurons.
+2. Input-space complementary initialization designed directly around the XOR training examples.
+
+For the complementary condition, the two hidden weight vectors were constructed as:
+
+- neuron 1: [a, -a]
+- neuron 2: [-a, a]
+
+with zero biases.
+
+The scale `a` was matched to the average norm of the corresponding standard He-generated weight vectors so that the comparison preserved a comparable initialization scale while changing the feature directions.
+
+On the four XOR inputs `[00, 01, 10, 11]`, this construction produces the activation patterns:
+
+- neuron 1: `0010`
+- neuron 2: `0100`
+
+Thus each new neuron responds to one of the two positive XOR examples while remaining inactive on the two negative examples.
+
+Each condition contained 80 seed/initialization combinations.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+| Initialization | Successful cases | Mean final loss |
+|---|---:|---:|
+| Standard He pair | 73/80 | 0.021875000000 |
+| Input-space complementary features | 80/80 | 0.000000000000 |
+
+The standard condition reproduced the previous 73/80 rescue rate.
+
+The input-space complementary condition succeeded on all 80 combinations:
+
+- offset 0: 10/10
+- offset 1: 10/10
+- offset 2: 10/10
+- offset 3: 10/10
+- offset 4: 10/10
+- offset 5: 10/10
+- offset 10: 10/10
+- offset 100: 10/10
+
+The complementary condition produced the same canonical activation pattern in every run:
+
+`0010|0100`
+
+with:
+
+- success = 80
+- failure = 0
+
+### Conclusion
+
+Deliberately constructing complementary features in the actual XOR input space produced a complete rescue in all 80 tested combinations, compared with 73/80 under standard initialization.
+
+This provides experimental support for the hypothesis developed in Experiments 057 and 058: useful complementarity is a property of the features produced on the task inputs, not simply a property of geometric relationships between raw hidden-weight vectors.
+
+Experiment 058 showed that forcing raw hidden-weight vectors to be orthogonal did not improve rescue reliability. Experiment 059 instead directly constructed two complementary XOR feature responses and increased the observed rescue rate from 91.25% to 100%.
+
+The intervention is stronger evidence than the observational results in Experiment 057 because the feature relationship was deliberately manipulated before training.
+
+However, this result is specific to the XOR task, this network architecture, this injection point, and the tested initialization scale. It does not establish that the exact `0010|0100` construction is generally optimal for other tasks.
+
+The next experiment should separate the effect of exact XOR-targeted feature patterns from the broader idea of complementarity by testing alternative complementary feature constructions and determining which structural properties are actually necessary for reliable rescue.
