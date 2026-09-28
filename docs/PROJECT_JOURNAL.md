@@ -4556,3 +4556,119 @@ Therefore, the important property is not simply how much a newly added hidden fe
 This strengthens the hypothesis that rescue depends on task-relevant hidden-feature formation rather than raw parameter-update magnitude.
 
 The next experiment should measure whether the learned hidden-weight vectors become aligned with specific XOR decision directions or input differences associated with the target labels.
+
+## Experiment 056 — Task-Aligned Hidden Features
+
+### Question
+
+Do newly added hidden neurons become useful for rescue by developing activation patterns that distinguish the XOR positive and negative classes?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–055.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- zero initial output weights for the new neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+The XOR positive class was:
+
+- [0,1]
+- [1,0]
+
+The negative class was:
+
+- [0,0]
+- [1,1]
+
+For each new neuron, measured the difference between its mean activation on the positive and negative classes:
+
+positive mean - negative mean
+
+The signed contribution contrast was then calculated by multiplying this contrast by the neuron's output weight.
+
+Measurements were taken at relative steps:
+
+- 0
+- 1
+- 5
+- 20
+- 100
+- 500
+- 3900
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+Across the 80 seed/initialization combinations:
+
+- successful rescues: 73
+- failed rescues: 7
+
+At the injection point:
+
+- successful mean absolute activation contrast: 0.237771
+- failed mean absolute activation contrast: 0.170996
+
+By relative step 20:
+
+- successful mean signed contribution contrast: 0.027023
+- failed mean signed contribution contrast: 0.026344
+
+By relative step 100:
+
+- successful mean signed contribution contrast: 0.125827
+- failed mean signed contribution contrast: 0.104029
+
+By relative step 500:
+
+- successful mean signed contribution contrast: 0.439675
+- failed mean signed contribution contrast: 0.229867
+
+At the final checkpoint:
+
+- successful mean signed contribution contrast: 0.478300
+- failed mean signed contribution contrast: 0.234112
+
+The successful group therefore developed substantially stronger task-aligned contributions, especially after the first 100 post-injection updates.
+
+### Failed Cases
+
+The individual failures show that task alignment alone is not sufficient.
+
+For example:
+
+- seed 7, offset 3 reached signed contribution contrast 0.288305 at step 500 but still failed
+- seed 3, offset 4 reached 0.370730 but still failed
+- seed 3, offset 10 reached 0.460494 but still failed
+
+These failed cases demonstrate that a new neuron can become positively aligned with the XOR class structure and still fail to produce a complete solution.
+
+Other failures had much weaker task alignment, including:
+
+- seed 3, offset 1: 0.007008
+- seed 7, offset 0: 0.102815
+- seed 7, offset 10: 0.319939
+- seed 5, offset 100: 0.059778
+
+### Conclusion
+
+Successful rescue trajectories generally develop stronger task-aligned hidden contributions than failed trajectories.
+
+This provides a more informative signal than raw hidden-weight displacement alone. By step 500, the successful group had a mean signed task contribution contrast of approximately 0.440 compared with approximately 0.230 for failed cases.
+
+However, task alignment is not sufficient by itself. Several failed trajectories developed substantial positive-vs-negative contribution contrast but still converged to a loss near 0.25.
+
+Therefore, successful rescue appears to require more than a single useful hidden feature. A hidden neuron can point in the correct class-separating direction without providing enough complementary structure to represent the complete XOR mapping.
+
+This suggests that the interaction between the newly added neurons is important. The next experiment should examine whether successful rescue depends on the two new features providing complementary rather than redundant class-separating information.
