@@ -4368,3 +4368,76 @@ Together, these results suggest that successful rescue requires sufficient freed
 The experiment also shows that the remaining seven failures are not explained simply by output-weight growth being too slow during the first 20 updates.
 
 The next experiment should therefore investigate the hidden neurons' parameter updates themselves, rather than only their output connections.
+
+## Experiment 054 — Hidden Feature Update Scaling
+
+### Question
+
+Does changing the update speed of newly added hidden neurons during the first 20 updates after injection affect rescue success?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–053.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- zero initial output weights for the new neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+For the first 20 updates after injection, only the hidden-parameter updates of the two newly added neurons were scaled.
+
+Tested scaling factors:
+
+- 0.0x
+- 1.0x
+- 2.0x
+- 4.0x
+
+The output-layer updates remained normal.
+
+Each condition contained 80 seed/initialization combinations.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+All four conditions produced exactly the same outcome:
+
+| Hidden update factor | Successful cases | Mean final loss |
+|---|---:|---:|
+| 0.0x | 73/80 | 0.021875000000 |
+| 1.0x | 73/80 | 0.021875000000 |
+| 2.0x | 73/80 | 0.021875000000 |
+| 4.0x | 73/80 | 0.021875000000 |
+
+The 1.0x condition is the normal-training control and reproduced the previous 73/80 result.
+
+Even freezing the newly added hidden neurons for the first 20 post-injection updates produced the same 73/80 success rate.
+
+Increasing their hidden-parameter update magnitude to 2x or 4x also produced no change in success rate or mean final loss.
+
+### Conclusion
+
+The speed of hidden-feature learning during the first 20 updates after capacity injection did not affect the final rescue outcome in this experiment.
+
+The most restrictive condition, 0.0x, froze the new hidden parameters during those first 20 updates, yet achieved the same success rate as the normal 1.0x condition.
+
+Likewise, accelerating the hidden updates to 2x or 4x produced no measurable change.
+
+This is a useful null result when combined with Experiments 051–053:
+
+- limiting eventual output contribution can reduce rescue success
+- accelerating output-weight growth does not improve rescue
+- limiting or accelerating early hidden-feature updates does not change rescue
+
+These results suggest that the decisive factor is not simply how quickly the new parameters move immediately after injection. The more important factor may be whether the new neurons eventually discover a useful task-aligned configuration over the subsequent training trajectory.
+
+The next experiment should therefore examine the direction of the learned hidden-feature changes rather than their update magnitude alone.
