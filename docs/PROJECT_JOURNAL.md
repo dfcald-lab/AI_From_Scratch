@@ -3997,3 +3997,141 @@ This reinforces the result from Experiment 048 that sufficiently negative output
 The result also weakens the hypothesis that rescue depends simply on introducing a particular sign pattern into the output layer.
 
 The next experiment should return to the hidden representation and ask whether the new neurons' learned contributions, rather than their initial output-weight signs, predict successful rescue.
+
+## Experiment 050 — Learned Rescue Contributions
+
+### Question
+
+After two hidden neurons are injected into a failing width-2 trajectory, what distinguishes the neurons that become useful from those that do not?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–049.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- zero initial output weights for the new neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+Measurements were taken at relative steps:
+
+- 0
+- 1
+- 5
+- 20
+- 100
+- 500
+- 3900
+
+For each new hidden neuron, measured:
+
+- absolute output weight
+- number of active XOR examples
+- mean activation
+- contribution magnitude to the output
+
+The contribution of a neuron was calculated as its output weight multiplied by its hidden activation. Success was defined as final loss < 1e-6.
+
+### Results
+
+Across the 80 seed/initialization combinations:
+
+- successful rescues: 73
+- failed rescues: 7
+
+The successful group developed substantially larger contributions from the newly added neurons.
+
+At relative step 20:
+
+- successful mean absolute output weight: 0.057198
+- failed mean absolute output weight: 0.044954
+- successful mean contribution norm: 0.117597
+- failed mean contribution norm: 0.082066
+
+At relative step 100:
+
+- successful mean absolute output weight: 0.224344
+- failed mean absolute output weight: 0.151504
+- successful mean contribution norm: 0.436153
+- failed mean contribution norm: 0.284186
+
+At relative step 500:
+
+- successful mean absolute output weight: 0.589309
+- failed mean absolute output weight: 0.306011
+- successful mean contribution norm: 1.395823
+- failed mean contribution norm: 0.619010
+
+At the final checkpoint:
+
+- successful mean absolute output weight: 0.627039
+- failed mean absolute output weight: 0.318465
+- successful mean contribution norm: 1.492687
+- failed mean contribution norm: 0.678961
+
+The successful group therefore produced approximately twice the new-neuron contribution magnitude of the failed group by the final checkpoint.
+
+Activation support also differed.
+
+At the injection point:
+
+- successful mean active examples per new neuron: 1.575
+- failed mean active examples per new neuron: 1.071
+
+At relative step 20:
+
+- successful: 2.110
+- failed: 1.143
+
+At relative step 500:
+
+- successful: 1.877
+- failed: 0.857
+
+By the final checkpoint:
+
+- successful: 1.562
+- failed: 0.857
+
+### Failed Cases
+
+The individual failed trajectories show a recurring pattern in which one of the two newly added neurons contributes nothing or very little.
+
+Examples:
+
+- seed 7, offset 0: one new neuron had output weight 0.032481 while the other remained at 0.0 and inactive
+- seed 3, offset 1: one new neuron remained inactive with zero output weight
+- seed 7, offset 3: one new neuron remained inactive with zero output weight
+- seed 3, offset 4: one new neuron remained inactive with zero output weight
+- seed 7, offset 10: one new neuron remained inactive
+- seed 5, offset 100: one new neuron remained inactive while the other developed a negative output weight
+
+Seed 3 with offset 10 is an important exception: both new neurons developed nonzero output weights and both were active on two examples, yet the run still failed.
+
+### Conclusion
+
+Successful rescue is strongly associated with the newly added neurons becoming substantial contributors to the output during training.
+
+Compared with failed rescues, successful cases developed:
+
+- larger output weights
+- broader activation support
+- larger hidden-to-output contribution magnitude
+
+The divergence appears early and grows over time. By relative step 20, the successful group already has higher output-weight magnitude and contribution norm, and the difference becomes much larger by steps 100–500.
+
+The failed cases frequently contain one new neuron that remains inactive or has zero output weight. However, this is not a complete explanation because at least one failed case developed nonzero contributions from both new neurons.
+
+Therefore, the important property is likely not simple neuron survival or activation coverage alone. It is whether the newly added features become sufficiently useful to the output objective during optimization.
+
+This provides a stronger characterization of the rescue mechanism but remains observational. The correlation between contribution growth and successful learning does not establish whether large contributions cause success or emerge because the trajectory is already moving toward a solution.
+
+The next experiment should manipulate the contribution of newly added neurons directly and test whether forcing or limiting their output influence changes rescue probability.
