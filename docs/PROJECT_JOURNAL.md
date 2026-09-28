@@ -4672,3 +4672,112 @@ However, task alignment is not sufficient by itself. Several failed trajectories
 Therefore, successful rescue appears to require more than a single useful hidden feature. A hidden neuron can point in the correct class-separating direction without providing enough complementary structure to represent the complete XOR mapping.
 
 This suggests that the interaction between the newly added neurons is important. The next experiment should examine whether successful rescue depends on the two new features providing complementary rather than redundant class-separating information.
+
+## Experiment 057 — Hidden Feature Complementarity
+
+### Question
+
+Does successful rescue depend on the two newly added hidden neurons providing complementary rather than redundant features?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–056.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- zero initial output weights for the new neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+At relative steps 0, 20, 100, 500, and 3900, the two new hidden neurons were compared using their four-example activation vectors.
+
+Measured:
+
+- cosine similarity between the two activation vectors
+- independence, defined as 1 - cosine^2
+- absolute determinant of the positive/negative class-response matrix
+- combined class-contrast magnitude
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+Across the 80 seed/initialization combinations:
+
+- successful rescues: 73
+- failed rescues: 7
+
+At the injection point:
+
+- successful mean activation-vector cosine: 0.212542
+- failed mean cosine: 0.139491
+- successful mean independence: 0.565860
+- failed mean independence: 0.006652
+- successful mean determinant magnitude: 0.118325
+- failed mean determinant magnitude: 0.003004
+
+By relative step 100:
+
+- successful mean independence: 0.578864
+- failed mean independence: 0.000000
+- successful mean determinant magnitude: 0.139700
+- failed mean determinant magnitude: approximately 0
+
+By relative step 500:
+
+- successful mean cosine: 0.165757
+- failed mean cosine: 0.142857
+- successful mean independence: 0.594244
+- failed mean independence: 0.000000
+- successful mean determinant magnitude: 0.174206
+- failed mean determinant magnitude: 0.000000
+
+At the final checkpoint:
+
+- successful mean cosine: 0.160700
+- failed mean cosine: 0.142857
+- successful mean independence: 0.596909
+- failed mean independence: 0.000000
+- successful mean determinant magnitude: 0.171516
+- failed mean determinant magnitude: 0.000000
+
+The successful trajectories therefore maintained two substantially distinct activation directions, while the failed trajectories became redundant or effectively one-dimensional.
+
+### Failed Cases
+
+All seven failed cases had zero determinant magnitude at step 500.
+
+Most failures had one new neuron completely inactive, producing an effectively one-feature rescue attempt.
+
+The failures included:
+
+- seed 7, offset 0: one active new feature and one inactive feature
+- seed 3, offset 1: one inactive feature
+- seed 7, offset 3: one inactive feature
+- seed 3, offset 4: one inactive feature
+- seed 3, offset 10: both features active but cosine similarity reached 1.0, indicating redundant activation vectors
+- seed 7, offset 10: one inactive feature
+- seed 5, offset 100: one inactive feature
+
+The seed 3, offset 10 case is especially informative because its combined class contrast was relatively large, yet the two features were redundant and the run still failed.
+
+### Conclusion
+
+Successful rescue is strongly associated with complementary hidden features.
+
+The successful trajectories developed and maintained two distinct activation directions, while every failed case was effectively reduced to a one-dimensional hidden representation by the step-500 complementarity measures.
+
+This is a stronger structural explanation than raw activation count, gradient magnitude, or parameter displacement.
+
+The result also explains why a single strongly task-aligned feature can still fail: XOR requires a representation with enough independent structure for the linear output layer to distinguish both positive examples from both negative examples.
+
+However, this experiment is observational. It shows a strong association between feature complementarity and successful rescue but does not establish that complementarity itself causes success.
+
+The next experiment should intervene on the initial relationship between the two new hidden features and test whether deliberately complementary initialization improves rescue reliability.
