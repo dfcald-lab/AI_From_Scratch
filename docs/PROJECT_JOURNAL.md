@@ -4441,3 +4441,118 @@ This is a useful null result when combined with Experiments 051–053:
 These results suggest that the decisive factor is not simply how quickly the new parameters move immediately after injection. The more important factor may be whether the new neurons eventually discover a useful task-aligned configuration over the subsequent training trajectory.
 
 The next experiment should therefore examine the direction of the learned hidden-feature changes rather than their update magnitude alone.
+
+## Experiment 055 — Hidden Feature Direction
+
+### Question
+
+Does the direction and magnitude of hidden-feature movement after capacity injection distinguish successful rescues from failed rescues?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–054.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- zero initial output weights for the new neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+For each newly added hidden neuron, tracked its hidden weight vector relative to its value at injection.
+
+Measurements were taken at relative steps:
+
+- 0
+- 1
+- 5
+- 20
+- 100
+- 500
+- 3900
+
+Measured:
+
+- cosine similarity between initial and current hidden-weight vectors
+- Euclidean weight displacement
+- absolute bias change
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+Across the 80 seed/initialization combinations:
+
+- successful rescues: 73
+- failed rescues: 7
+
+At the first few updates, the successful and failed groups were nearly identical.
+
+By relative step 20:
+
+- successful mean displacement: 0.005928
+- failed mean displacement: 0.004911
+- successful mean bias change: 0.001602
+- failed mean bias change: 0.000601
+
+By relative step 100:
+
+- successful mean displacement: 0.090818
+- failed mean displacement: 0.061836
+- successful mean cosine similarity: 0.994261
+- failed mean cosine similarity: 0.996702
+
+By relative step 500:
+
+- successful mean displacement: 0.366420
+- failed mean displacement: 0.181424
+- successful mean cosine similarity: 0.952493
+- failed mean cosine similarity: 0.971431
+
+At the final checkpoint:
+
+- successful mean displacement: 0.402689
+- failed mean displacement: 0.189233
+- successful mean cosine similarity: 0.939436
+- failed mean cosine similarity: 0.971040
+- successful mean bias change: 0.063797
+- failed mean bias change: 0.022425
+
+Thus, successful rescue trajectories moved the newly added hidden features substantially farther from their injected initialization than failed trajectories.
+
+### Failed Cases
+
+The individual failures show that large movement alone is not sufficient.
+
+For example:
+
+- seed 3, offset 4 reached displacement 0.396630 at step 500 and cosine 0.882785, yet still failed
+- seed 5, offset 100 reached bias change 0.146822, yet still failed
+
+Other failed cases showed much smaller movement, such as:
+
+- seed 3, offset 1: displacement 0.057178 at step 500
+- seed 7, offset 0: displacement 0.177999
+- seed 7, offset 3: displacement 0.189473
+
+### Conclusion
+
+Successful rescue trajectories generally required substantially more movement of the newly added hidden features than failed trajectories.
+
+The divergence became clear during the first few hundred post-injection updates. By step 500, successful cases had approximately twice the mean hidden-weight displacement of failed cases.
+
+Cosine similarity also decreased more strongly in successful trajectories, indicating that their hidden features moved farther in parameter space from their initial directions.
+
+However, direction and displacement alone were not sufficient to predict success. At least one failed case moved farther and rotated more strongly than the successful-group average.
+
+Therefore, the important property is not simply how much a newly added hidden feature changes. The feature must change in a way that becomes useful to the XOR objective.
+
+This strengthens the hypothesis that rescue depends on task-relevant hidden-feature formation rather than raw parameter-update magnitude.
+
+The next experiment should measure whether the learned hidden-weight vectors become aligned with specific XOR decision directions or input differences associated with the target labels.
