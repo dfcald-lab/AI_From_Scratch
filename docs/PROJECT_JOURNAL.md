@@ -4301,3 +4301,70 @@ This complements Experiment 051, where limiting output-weight magnitude also red
 However, because the intervention is implemented by rescaling output weights, the experiment does not completely isolate contribution magnitude from changes to the gradient dynamics caused by that rescaling.
 
 The next experiment should examine whether deliberately encouraging larger contributions early after injection improves rescue, rather than only testing what happens when contribution is restricted.
+
+## Experiment 053 — Rescue Contribution Boost
+
+### Question
+
+Does accelerating the growth of the newly added neurons' output connections immediately after injection improve rescue success?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–052.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- zero initial output weights for the new neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+The normal output-weight update for the two new neurons was multiplied by a boost factor during the first 20 updates after injection.
+
+Tested boost factors:
+
+- 1x control
+- 2x
+- 4x
+- 8x
+
+The remaining training after the first 20 post-injection updates was unchanged.
+
+Each condition contained 80 seed/initialization combinations.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+All four conditions produced exactly the same outcome:
+
+| Boost factor | Successful cases | Mean final loss |
+|---|---:|---:|
+| 1x | 73/80 | 0.021875000000 |
+| 2x | 73/80 | 0.021875000000 |
+| 4x | 73/80 | 0.021875000000 |
+| 8x | 73/80 | 0.021875000000 |
+
+Every initialization offset produced the same number of successful seeds under every boost factor.
+
+The 8x condition therefore produced no measurable improvement in the selected success criterion.
+
+### Conclusion
+
+Accelerating the output-weight updates of the newly added neurons during the first 20 updates did not change rescue success in this experiment.
+
+The success rate remained 73/80 for every tested boost factor, including an 8x increase.
+
+This is another important narrowing result. Experiment 051 showed that restricting contribution can reduce rescue reliability, while Experiment 053 shows that simply pushing output-weight growth faster does not improve the already-high rescue rate.
+
+Together, these results suggest that successful rescue requires sufficient freedom for useful contributions to develop, but additional acceleration alone does not guarantee a better trajectory.
+
+The experiment also shows that the remaining seven failures are not explained simply by output-weight growth being too slow during the first 20 updates.
+
+The next experiment should therefore investigate the hidden neurons' parameter updates themselves, rather than only their output connections.
