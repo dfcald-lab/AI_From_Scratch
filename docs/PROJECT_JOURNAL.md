@@ -5047,3 +5047,136 @@ Experiment 060 complete.
 ### Next Direction
 
 Systematically vary the relationship between the two new hidden activation patterns to determine whether rescue reliability depends on feature diversity, activation coverage, overlap, or some minimum amount of independence between the new features.
+
+## Experiment 061 — Feature Overlap Sweep
+
+### Question
+
+What structural relationship between newly added hidden features best explains rescue reliability?
+
+Experiment 060 showed that multiple distinct feature constructions could produce perfect rescue while redundant and effectively one-feature constructions performed worse.
+
+Experiment 061 therefore varied the amount of activation overlap between the two newly added hidden features while keeping their weight norms matched.
+
+### Setup
+
+Used the rescue configuration established in Experiments 043–060.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total training epochs
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- zero initial output weights for the new neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+Eight feature-pair conditions were compared.
+
+For each pair, the binary activation pattern across the XOR examples was measured.
+
+The following quantities were recorded:
+
+- activation overlap
+- activation union
+- Jaccard overlap
+- total active-example coverage
+- final training success
+
+Each condition contained 80 seed/initialization combinations.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+| Feature pair | Overlap | Union | Jaccard | Active coverage | Successful |
+|---|---:|---:|---:|---:|---:|
+| 0010\|0010 | 1 | 1 | 1.000 | 2 | 56/80 |
+| 0011\|0011 | 2 | 2 | 1.000 | 4 | 57/80 |
+| 0010\|0111 | 1 | 3 | 0.333 | 4 | 64/80 |
+| 0011\|0111 | 2 | 3 | 0.667 | 5 | 80/80 |
+| 0011\|0101 | 1 | 3 | 0.333 | 4 | 80/80 |
+| 0010\|0100 | 0 | 2 | 0.000 | 2 | 80/80 |
+| 0001\|0101 | 1 | 2 | 0.500 | 3 | 63/80 |
+| 0000\|0111 | 0 | 3 | 0.000 | 3 | 56/80 |
+
+### Observation
+
+Activation overlap alone does not explain rescue reliability.
+
+Completely redundant features performed poorly:
+
+- `0010|0010` → 56/80
+- `0011|0011` → 57/80
+
+However, reducing overlap did not automatically guarantee success.
+
+For example:
+
+- `0010|0111` had Jaccard overlap 0.333 but succeeded only 64/80.
+- `0001|0101` had Jaccard overlap 0.500 but succeeded only 63/80.
+
+In contrast:
+
+- `0011|0111` succeeded 80/80.
+- `0011|0101` succeeded 80/80.
+- `0010|0100` succeeded 80/80.
+
+The two zero-overlap conditions also behaved very differently:
+
+- `0010|0100` → 80/80
+- `0000|0111` → 56/80
+
+The difference is that the first gives separate active responses to the two positive XOR examples, while the second contains one completely inactive feature.
+
+### Interpretation
+
+The results rule out Jaccard overlap as a sufficient explanation of rescue success.
+
+Feature overlap is informative because highly redundant features reduce the amount of new information supplied by the injected neurons, but overlap must be considered together with which training examples are represented.
+
+The identity of the active XOR examples appears to matter.
+
+Successful feature pairs tend to provide useful responses covering both positive XOR examples without collapsing the new representation into a redundant or effectively one-feature system.
+
+The failed `0000|0111` condition demonstrates that zero overlap by itself is not sufficient. One feature can be completely inactive while the other remains active on several examples, leaving insufficient new structure for reliable rescue.
+
+### Lesson
+
+Feature complementarity is not a single scalar property.
+
+Two hidden features can have:
+
+- low overlap but poor usefulness,
+- high overlap but still provide some useful structure,
+- or low overlap while covering the task in a way that reliably improves optimization.
+
+The actual identity of the examples represented by each feature matters.
+
+### Important Understanding
+
+The investigation has moved from asking whether two features are different to asking what information those features provide about the task.
+
+For XOR, the positive examples are:
+
+- [0,1]
+- [1,0]
+
+while the negative examples are:
+
+- [0,0]
+- [1,1]
+
+A feature pair may therefore need to be evaluated by its coverage and relationship to these task classes, not only by geometric independence.
+
+### Status
+
+Experiment 061 complete.
+
+### Next Direction
+
+Systematically vary which XOR examples are activated by the two new features and determine whether successful rescue is predicted by positive-class coverage, negative-class exclusion, or the combination of both.
