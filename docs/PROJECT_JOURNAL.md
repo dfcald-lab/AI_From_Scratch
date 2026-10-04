@@ -4942,3 +4942,108 @@ The intervention is stronger evidence than the observational results in Experime
 However, this result is specific to the XOR task, this network architecture, this injection point, and the tested initialization scale. It does not establish that the exact `0010|0100` construction is generally optimal for other tasks.
 
 The next experiment should separate the effect of exact XOR-targeted feature patterns from the broader idea of complementarity by testing alternative complementary feature constructions and determining which structural properties are actually necessary for reliable rescue.
+
+## Experiment 060 — Complementarity Generalization
+
+### Question
+
+Does the perfect rescue observed in Experiment 059 depend on the exact `0010|0100` activation pattern, or does a broader form of hidden-feature diversity improve rescue reliability?
+
+### Setup
+
+Used the rescue configuration from Experiments 043–059.
+
+- He initialization for the original width-2 network
+- 2 initial hidden ReLU neurons
+- one linear output neuron
+- XOR training data
+- full-batch gradient averaging
+- learning rate: 0.10
+- 4000 total parameter updates
+- capacity injection at epoch 100
+- 2 additional hidden ReLU neurons
+- zero initial output weights for the new neurons
+- seeds 0–9
+- initialization offsets: 0, 1, 2, 3, 4, 5, 10, 100
+
+Six new-feature initialization conditions were compared:
+
+1. Standard independent He initialization
+2. The Experiment 059 target-selective construction
+3. An asymmetric version of the target-selective construction
+4. An axis-pair construction using separate input dimensions
+5. A hinge-style decomposition
+6. A redundant pair using the same feature twice
+
+Each condition contained 80 seed/initialization combinations.
+
+Success was defined as final loss < 1e-6.
+
+### Results
+
+| Condition | Successful cases | Mean final loss |
+|---|---:|---:|
+| Standard He | 73/80 | 0.021875000000 |
+| Target-selective | 80/80 | 0.000000000000 |
+| Asymmetric-selective | 80/80 | 0.000000000000 |
+| Axis-pair | 80/80 | 0.000000000000 |
+| Hinge-decomposition | 56/80 | 0.076016616307 |
+| Redundant | 56/80 | 0.091666666667 |
+
+The target-selective condition reproduced the Experiment 059 result of 80/80.
+
+The asymmetric-selective condition also reached 80/80, showing that the exact activation magnitudes are not required as long as the same selective support pattern is preserved.
+
+The axis-pair condition produced a different activation structure:
+
+`0011|0101`
+
+and also achieved 80/80.
+
+The redundant condition produced:
+
+`0010|0010`
+
+and achieved only 56/80.
+
+The hinge condition produced:
+
+`0000|0111`
+
+where one newly added neuron was inactive on all four XOR examples, and also achieved only 56/80.
+
+### Observation
+
+The Experiment 059 activation pattern is not uniquely responsible for perfect rescue.
+
+Multiple distinct feature constructions achieved 80/80 success.
+
+The strongest contrast was between the successful axis-pair construction and the unsuccessful redundant construction. The axis pair created two different active response patterns, while the redundant condition created two identical patterns.
+
+The hinge condition provided one active feature and one inactive feature and also failed at the same 56/80 rate observed for the redundant condition.
+
+### Interpretation
+
+These results strengthen the hypothesis that useful hidden-feature diversity is more important than reproducing one exact hand-crafted XOR representation.
+
+However, the experiment does not establish that any pair of distinct activation patterns is sufficient.
+
+The axis-pair features do not themselves form a complete linearly separable XOR representation. Their successful interaction with the existing hidden representation shows that newly added features can help optimization without individually solving the task.
+
+The failed hinge and redundant conditions suggest that adding capacity without sufficiently distinct useful responses does not provide the same rescue benefit.
+
+### Lesson
+
+Feature complementarity should be understood in terms of the responses produced on the actual task inputs.
+
+Parameter-space differences alone are not enough.
+
+The exact successful pattern from Experiment 059 is one example of a broader phenomenon: adding distinct hidden responses can provide new directions for the optimization process.
+
+### Status
+
+Experiment 060 complete.
+
+### Next Direction
+
+Systematically vary the relationship between the two new hidden activation patterns to determine whether rescue reliability depends on feature diversity, activation coverage, overlap, or some minimum amount of independence between the new features.
